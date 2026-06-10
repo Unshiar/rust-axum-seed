@@ -16,6 +16,11 @@ pub struct CreateUserDto {
     pub email: String,
 }
 
+#[derive(Serialize)]
+pub struct UserId {
+    pub id: i32,
+}
+
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {}
 

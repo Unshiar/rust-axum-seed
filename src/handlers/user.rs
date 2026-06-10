@@ -28,7 +28,7 @@ pub async fn get_user(
 pub async fn create_user(
     State(state): State<AppState>,
     Json(payload): Json<CreateUserDto>,
-) -> Result<(StatusCode, Json<user::Model>), ApiError> {
+) -> Result<(StatusCode, Json<user::UserId>), ApiError> {
     let new_user = user::ActiveModel {
         id: NotSet,
         name: Set(payload.name),
@@ -40,5 +40,5 @@ pub async fn create_user(
         .await
         .map_err(|e| ApiError::internal(format!("Ошибка при создании пользователя: {}", e)))?;
 
-    Ok((StatusCode::CREATED, Json(inserted_user)))
+    Ok((StatusCode::CREATED, Json(user::UserId { id: inserted_user.id })))
 }

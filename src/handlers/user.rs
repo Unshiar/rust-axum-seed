@@ -1,9 +1,9 @@
+use crate::entities::user::CreateUserDto;
 use crate::entities::{user, user::Entity as User};
+use crate::errors::ApiError;
 use crate::state::AppState;
 use axum::{Json, extract::State, http::StatusCode};
 use sea_orm::*;
-use crate::entities::user::CreateUserDto;
-use crate::errors::ApiError;
 
 // Получить пользователя по ID
 pub async fn get_user(
@@ -17,7 +17,10 @@ pub async fn get_user(
 
     match user {
         Some(user) => Ok(Json(user)),
-        None => Err(ApiError::not_found(format!("Пользователь с ID {} не найден", id))),
+        None => Err(ApiError::not_found(format!(
+            "Пользователь с ID {} не найден",
+            id
+        ))),
     }
 }
 
@@ -29,7 +32,7 @@ pub async fn create_user(
     let new_user = user::ActiveModel {
         id: NotSet,
         name: Set(payload.name),
-        email: Set(payload.email)
+        email: Set(payload.email),
     };
 
     let inserted_user = new_user

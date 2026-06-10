@@ -6,10 +6,10 @@ use sea_orm::Database;
 use std::net::SocketAddr;
 
 mod entities;
+mod errors;
 mod handlers;
 mod state;
 pub mod utils;
-mod errors;
 
 use handlers::user::{create_user, get_user};
 use state::AppState;

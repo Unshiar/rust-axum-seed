@@ -17,10 +17,7 @@ pub async fn get_user(
 
     match user {
         Some(user) => Ok(Json(user)),
-        None => Err(ApiError::not_found(format!(
-            "Пользователь с ID {} не найден",
-            id
-        ))),
+        None => Err(ApiError::user_not_found()),
     }
 }
 

@@ -1,6 +1,6 @@
 use crate::entities::user::CreateUserDto;
 use crate::entities::{user, user::Entity as User};
-use crate::errors::ApiError;
+use crate::errors::api::ApiError;
 use crate::state::AppState;
 use axum::{Json, extract::State, http::StatusCode};
 use sea_orm::*;
@@ -13,7 +13,7 @@ pub async fn get_user(
     let user = User::find_by_id(id)
         .one(&state.db)
         .await
-        .map_err(|e| ApiError::internal(format!("Ошибка базы данных: {}", e)))?;
+        .map_err(|e| ApiError::internal_bd(format!("Ошибка базы данных: {}", e)))?;
 
     match user {
         Some(user) => Ok(Json(user)),
@@ -35,7 +35,7 @@ pub async fn create_user(
     let inserted_user = new_user
         .insert(&state.db)
         .await
-        .map_err(|e| ApiError::internal(format!("Ошибка при создании пользователя: {}", e)))?;
+        .map_err(|e| ApiError::internal_bd(format!("Ошибка при создании пользователя: {}", e)))?;
 
     Ok((
         StatusCode::CREATED,

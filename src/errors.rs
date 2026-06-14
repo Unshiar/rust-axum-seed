@@ -1,9 +1,9 @@
 use axum::{Json, http::StatusCode, response::IntoResponse};
-use serde::{Serialize};
+use serde::Serialize;
 use serde_repr::*;
 
 #[derive(Serialize)]
-pub struct ApiError{
+pub struct ApiError {
     #[serde(skip_serializing)]
     status: StatusCode,
     error: ApiErrorCode,

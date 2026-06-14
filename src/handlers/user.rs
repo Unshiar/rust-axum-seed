@@ -37,5 +37,10 @@ pub async fn create_user(
         .await
         .map_err(|e| ApiError::internal(format!("Ошибка при создании пользователя: {}", e)))?;
 
-    Ok((StatusCode::CREATED, Json(user::UserId { id: inserted_user.id })))
+    Ok((
+        StatusCode::CREATED,
+        Json(user::UserId {
+            id: inserted_user.id,
+        }),
+    ))
 }

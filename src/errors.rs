@@ -1,11 +1,11 @@
 use axum::{Json, http::StatusCode, response::IntoResponse};
-use serde::{Serialize, Serializer};
+use serde::{Serialize};
+use serde_repr::*;
 
 #[derive(Serialize)]
 pub struct ApiError{
     #[serde(skip_serializing)]
     status: StatusCode,
-    #[serde(serialize_with = "serialize_enum_as_u32")]
     error: ApiErrorCode,
     message: String,
 }
@@ -16,17 +16,11 @@ impl IntoResponse for ApiError {
     }
 }
 
-#[derive(Serialize, Clone, Copy)]
+#[derive(Serialize_repr)]
+#[repr(u32)]
 pub enum ApiErrorCode {
     InternalError = 3000,
     UserNotFound = 3001,
-}
-
-fn serialize_enum_as_u32<S>(value: &ApiErrorCode, serializer: S) -> Result<S::Ok, S::Error>
-where
-    S: Serializer,
-{
-    serializer.serialize_u32(*value as u32)
 }
 
 impl ApiError {

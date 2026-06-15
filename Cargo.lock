@@ -2767,7 +2767,6 @@ dependencies = [
  "axum",
  "sea-orm",
  "serde",
- "serde_json",
  "serde_repr",
  "tokio",
 ]

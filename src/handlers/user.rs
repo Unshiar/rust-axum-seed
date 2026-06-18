@@ -1,9 +1,9 @@
-use crate::entities::user::CreateUserDto;
 use crate::entities::{user, user::Entity as User};
 use crate::errors::api::ApiError;
 use crate::state::AppState;
 use axum::{Json, extract::State, http::StatusCode};
 use sea_orm::*;
+use serde::{Deserialize, Serialize};
 
 // Получить пользователя по ID
 pub async fn get_user(
@@ -21,11 +21,22 @@ pub async fn get_user(
     }
 }
 
+#[derive(Deserialize)]
+pub struct CreateUserDto {
+    name: String,
+    email: String,
+}
+
+#[derive(Serialize)]
+pub struct UserId {
+    id: i32,
+}
+
 // Создать пользователя
 pub async fn create_user(
     State(state): State<AppState>,
     Json(payload): Json<CreateUserDto>,
-) -> Result<(StatusCode, Json<user::UserId>), ApiError> {
+) -> Result<(StatusCode, Json<UserId>), ApiError> {
     let new_user = user::ActiveModel {
         id: NotSet,
         name: Set(payload.name),
@@ -39,7 +50,7 @@ pub async fn create_user(
 
     Ok((
         StatusCode::CREATED,
-        Json(user::UserId {
+        Json(UserId {
             id: inserted_user.id,
         }),
     ))

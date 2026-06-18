@@ -10,17 +10,6 @@ pub struct Model {
     pub email: String,
 }
 
-#[derive(Deserialize)]
-pub struct CreateUserDto {
-    pub name: String,
-    pub email: String,
-}
-
-#[derive(Serialize)]
-pub struct UserId {
-    pub id: i32,
-}
-
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {}
 

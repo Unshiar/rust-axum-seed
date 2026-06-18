@@ -2,7 +2,7 @@ use axum::{
     Router,
     routing::{delete, get, post},
 };
-use sea_orm::Database;
+use sea_orm::{Database, DbErr};
 use std::net::SocketAddr;
 
 mod entities;
@@ -12,15 +12,24 @@ mod state;
 pub mod utils;
 
 use handlers::user::{create_user, delete_user, get_user};
+use migration::MigrationTrait;
+use migration::SchemaManager;
+use migration::m20220101_000001_create_table;
 use state::AppState;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), DbErr> {
     // 1. Инициализируем подключение к БД через SeaORM
     let db_url = "postgres://user:user@localhost:5432/db-test";
     let db = Database::connect(db_url)
         .await
         .expect("Не удалось подключиться к базе данных");
+
+    let schema_manager = SchemaManager::new(&db);
+    // 2. Вызываем метод .up() конкретной миграции напрямую!
+    m20220101_000001_create_table::Migration
+        .up(&schema_manager)
+        .await?;
 
     let state = AppState { db };
 
@@ -37,4 +46,6 @@ async fn main() {
 
     println!("Сервер запущен на http://{}", addr);
     axum::serve(listener, app).await.unwrap();
+
+    Ok(())
 }

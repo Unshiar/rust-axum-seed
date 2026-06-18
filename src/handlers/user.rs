@@ -55,3 +55,18 @@ pub async fn create_user(
         }),
     ))
 }
+
+pub async fn delete_user(
+    State(state): State<AppState>,
+    axum::extract::Path(id): axum::extract::Path<i32>,
+) -> Result<(StatusCode, Json<UserId>), ApiError> {
+    let user = User::delete_by_id(id)
+        .exec_with_returning(&state.db)
+        .await
+        .map_err(|e| ApiError::internal_bd(format!("Ошибка удаления пользователя: {}", e)))?;
+
+    match user {
+        Some(user) => Ok((StatusCode::OK, Json(UserId { id: user.id }))),
+        None => Err(ApiError::user_not_found()),
+    }
+}

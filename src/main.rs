@@ -1,6 +1,6 @@
 use axum::{
     Router,
-    routing::{get, post},
+    routing::{delete, get, post},
 };
 use sea_orm::Database;
 use std::net::SocketAddr;
@@ -11,7 +11,7 @@ mod handlers;
 mod state;
 pub mod utils;
 
-use handlers::user::{create_user, get_user};
+use handlers::user::{create_user, delete_user, get_user};
 use state::AppState;
 
 #[tokio::main]
@@ -28,6 +28,7 @@ async fn main() {
     let app = Router::new()
         .route("/users", post(create_user))
         .route("/users/{id}", get(get_user))
+        .route("/users/{id}", delete(delete_user))
         .with_state(state);
 
     // 3. Запускаем сервер с помощью Tokio

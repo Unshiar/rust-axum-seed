@@ -1,7 +1,7 @@
-use crate::entities::{user, user::Entity as User};
 use crate::errors::api::ApiError;
 use crate::state::AppState;
 use axum::{Json, extract::State, http::StatusCode};
+use entities::{user, user::Entity as User};
 use sea_orm::*;
 use serde::{Deserialize, Serialize};
 

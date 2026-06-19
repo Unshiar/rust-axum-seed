@@ -5,11 +5,9 @@ use axum::{
 use sea_orm::{Database, DbErr};
 use std::net::SocketAddr;
 
-mod entities;
 mod errors;
 mod handlers;
 mod state;
-pub mod utils;
 
 use handlers::user::{create_user, delete_user, get_user};
 use migration::MigrationTrait;

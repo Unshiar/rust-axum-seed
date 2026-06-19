@@ -3,16 +3,24 @@ name = "untitled"
 version = "0.1.0"
 edition = "2024"
 
+[workspace.dependencies]
+sea-orm = { version = "2.0.0-rc.41", features = ["sqlx-postgres", "runtime-tokio"] }
+sea-orm-migration = { version = "2.0.0-rc.41", features = ["sqlx-postgres", "runtime-tokio"] }
+serde = { version = "1.0.228", features = ["derive"] }
+tokio = { version = "1.52.3", features = ["full"] }
+
 [dependencies]
 axum = "0.8.9"
 migration = { path = "migration" }
-sea-orm = { version = "2.0.0-rc.41", features = ["sqlx-postgres", "runtime-tokio"] }
-serde = { version = "1.0.228", features = ["derive"] }
-tokio = { version = "1.52.3", features = ["full"] }
+entities = { path = "entities"}
+serde = { workspace = true }
+tokio = { workspace = true }
+sea-orm  = { workspace = true }
 serde_repr = "0.1.20"
 
 [workspace]
 members = [
-    ".",          # Ваше текущее основное приложение (src)
+    ".",
+    "entities",          # Ваше текущее основное приложение (src)
     "migration"   # Созданный пакет миграций
 ]

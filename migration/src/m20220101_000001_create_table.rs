@@ -1,5 +1,5 @@
+use sea_orm_migration::prelude::*;
 use sea_orm_migration::sea_orm::Schema;
-use sea_orm_migration::{prelude::*, schema::*};
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
@@ -13,7 +13,7 @@ impl MigrationTrait for Migration {
         }
 
         let schema = Schema::new(manager.get_database_backend());
-
+        Ok(())
         // manager
         //     .create_table(schema.create_table_from_entity(User).to_owned())
         //     .await

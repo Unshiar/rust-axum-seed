@@ -1,19 +1,15 @@
-use axum::{
-    Router,
-    routing::{delete, get, post},
-};
-use sea_orm::{Database, DbErr};
+use sea_orm::Database;
 use std::net::SocketAddr;
 
+mod database;
 mod errors;
 mod handlers;
-mod state;
 
-use handlers::user::{create_user, delete_user, get_user};
-use state::AppState;
+use crate::handlers::register_handlers;
+use database::state::AppState;
 
 #[tokio::main]
-async fn main() -> Result<(), DbErr> {
+async fn main() {
     // 1. Инициализируем подключение к БД через SeaORM
     let db_url = "postgres://user:user@localhost:5432/db-test";
     let db = Database::connect(db_url)
@@ -29,11 +25,7 @@ async fn main() -> Result<(), DbErr> {
     let state = AppState { db };
 
     // 2. Настраиваем маршруты и передаем в них состояние
-    let app = Router::new()
-        .route("/users", post(create_user))
-        .route("/users/{id}", get(get_user))
-        .route("/users/{id}", delete(delete_user))
-        .with_state(state);
+    let app = register_handlers(state);
 
     // 3. Запускаем сервер с помощью Tokio
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
@@ -41,6 +33,4 @@ async fn main() -> Result<(), DbErr> {
 
     println!("Сервер запущен на http://{}", addr);
     axum::serve(listener, app).await.unwrap();
-
-    Ok(())
 }

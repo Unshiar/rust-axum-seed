@@ -1,5 +1,5 @@
+use crate::database::state::AppState;
 use crate::errors::api::ApiError;
-use crate::state::AppState;
 use axum::{Json, extract::State, http::StatusCode};
 use entities::{user, user::Entity as User};
 use sea_orm::*;

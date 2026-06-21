@@ -1,3 +1,4 @@
+use entities::user::Entity as User;
 use sea_orm_migration::prelude::*;
 use sea_orm_migration::sea_orm::Schema;
 #[derive(DeriveMigrationName)]
@@ -7,20 +8,22 @@ pub struct Migration;
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         // 1. ПРОВЕРКА ДЛЯ PRODUCTION
-        if manager.has_table("users").await? {
-            // Если таблица уже есть на живом сервере, мы НИЧЕГО не делаем.
-            // Продакшен-сервер уже прошел всю историю изменений ранее.
+        let schema = Schema::new(manager.get_database_backend());
+        if !manager.has_table(User.to_string()).await? {
+            return manager
+                .create_table(schema.create_table_from_entity(User).to_owned())
+                .await;
         }
 
-        let schema = Schema::new(manager.get_database_backend());
         Ok(())
-        // manager
-        //     .create_table(schema.create_table_from_entity(User).to_owned())
-        //     .await
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         // Replace the sample below with your own migration scripts
+        manager
+            .drop_table(Table::drop().table(User).to_owned())
+            .await?;
+
         Ok(())
     }
 }

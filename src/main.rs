@@ -10,9 +10,6 @@ mod handlers;
 mod state;
 
 use handlers::user::{create_user, delete_user, get_user};
-use migration::MigrationTrait;
-use migration::SchemaManager;
-use migration::m20220101_000001_create_table;
 use state::AppState;
 
 #[tokio::main]
@@ -23,11 +20,11 @@ async fn main() -> Result<(), DbErr> {
         .await
         .expect("Не удалось подключиться к базе данных");
 
-    let schema_manager = SchemaManager::new(&db);
-    // 2. Вызываем метод .up() конкретной миграции напрямую!
-    m20220101_000001_create_table::Migration
-        .up(&schema_manager)
-        .await?;
+    // let schema_manager = SchemaManager::new(&db);
+    // // 2. Вызываем метод .up() конкретной миграции напрямую!
+    // m20220101_000001_create_table::Migration
+    //     .up(&schema_manager)
+    //     .await?;
 
     let state = AppState { db };
 

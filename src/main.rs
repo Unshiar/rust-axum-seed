@@ -5,6 +5,7 @@ mod database;
 mod errors;
 mod handlers;
 
+use crate::database::register_tables;
 use crate::handlers::register_handlers;
 use database::state::AppState;
 
@@ -22,6 +23,11 @@ async fn main() {
     //     .up(&schema_manager)
     //     .await?;
 
+    if cfg!(debug_assertions) {
+        register_tables(&db).await.unwrap();
+    } else {
+       println!("Release migration");
+    }
     let state = AppState { db };
 
     // 2. Настраиваем маршруты и передаем в них состояние

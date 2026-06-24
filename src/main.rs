@@ -26,7 +26,7 @@ async fn main() {
     if cfg!(debug_assertions) {
         register_tables(&db).await.unwrap();
     } else {
-       println!("Release migration");
+        println!("Release migration");
     }
     let state = AppState { db };
 

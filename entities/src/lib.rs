@@ -7,6 +7,7 @@ use sea_orm_migration::{SchemaManager, async_trait};
 // 1. Единый трейт для управления схемами, доступный везде
 #[async_trait::async_trait]
 pub trait ManageSchema {
+    // Used during debug development
     async fn create_table_if_not_exist(&self, manager: &SchemaManager) -> Result<(), DbErr>;
     async fn create_table_force(&self, manager: &SchemaManager) -> Result<(), DbErr>;
     async fn drop_table_if_exists(&self, manager: &SchemaManager) -> Result<(), DbErr>;

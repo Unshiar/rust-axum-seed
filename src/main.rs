@@ -1,4 +1,5 @@
 use sea_orm::Database;
+use sea_orm_migration::MigratorTrait;
 use std::net::SocketAddr;
 
 mod database;
@@ -8,6 +9,7 @@ mod handlers;
 use crate::database::register_tables;
 use crate::handlers::register_handlers;
 use database::state::AppState;
+use migration::Migrator;
 
 #[tokio::main]
 async fn main() {
@@ -17,17 +19,16 @@ async fn main() {
         .await
         .expect("Не удалось подключиться к базе данных");
 
-    // let schema_manager = SchemaManager::new(&db);
-    // // 2. Вызываем метод .up() конкретной миграции напрямую!
-    // m20220101_000001_create_table::Migration
-    //     .up(&schema_manager)
-    //     .await?;
-
     if cfg!(debug_assertions) {
         register_tables(&db).await.unwrap();
     } else {
-        println!("Release migration");
+        println!("Release migration - start.");
+        Migrator::up(&db, None)
+            .await
+            .expect("Error while migration");
+        println!("Release migration - done.");
     }
+
     let state = AppState { db };
 
     // 2. Настраиваем маршруты и передаем в них состояние

@@ -12,11 +12,10 @@ use migration::Migrator;
 
 #[tokio::main]
 async fn main() {
-    // 1. Инициализируем подключение к БД через SeaORM
     let db_url = "postgres://user:user@localhost:5432/db-test";
     let db = Database::connect(db_url)
         .await
-        .expect("Не удалось подключиться к базе данных");
+        .expect("Can't connect to database");
 
     if cfg!(debug_assertions) {
         register_tables(&db).await.unwrap();
@@ -30,13 +29,11 @@ async fn main() {
 
     let state = AppState { db };
 
-    // 2. Настраиваем маршруты и передаем в них состояние
     let app = register_handlers(state);
 
-    // 3. Запускаем сервер с помощью Tokio
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
 
-    println!("Сервер запущен на http://{}", addr);
+    println!("Server started on http://{}", addr);
     axum::serve(listener, app).await.unwrap();
 }

@@ -6,9 +6,8 @@ mod database;
 mod errors;
 mod handlers;
 
-use crate::database::register_tables;
-use crate::handlers::register_handlers;
-use database::state::AppState;
+use database::{register_tables, state::AppState};
+use handlers::register_handlers;
 use migration::Migrator;
 
 #[tokio::main]

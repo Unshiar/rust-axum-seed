@@ -40,7 +40,7 @@ where
 pub async fn register_tables(db: &DatabaseConnection) -> Result<(), DbErr> {
     let schema_manager = SchemaManager::new(db);
 
-    let tables: Vec<&dyn RegisterTable> = vec![
+    let tables: Vec<&(dyn RegisterTable + Sync)> = vec![
         &entities::user::Entity,
         // &crate::entity::post::Entity,   <-- Когда появятся новые, просто раскомментируете
         // &crate::entity::order::Entity,  <-- и добавите их в этот список

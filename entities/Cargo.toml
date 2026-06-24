@@ -5,4 +5,5 @@ edition = "2024"
 
 [dependencies]
 sea-orm = { workspace = true } # Наследование из корня воркспейса
+sea-orm-migration  = { workspace = true }
 serde = { workspace = true }   # Наследование из корня воркспейса

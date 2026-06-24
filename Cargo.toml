@@ -16,6 +16,7 @@ entities = { path = "entities"}
 serde = { workspace = true }
 tokio = { workspace = true }
 sea-orm  = { workspace = true }
+sea-orm-migration  = { workspace = true }
 serde_repr = "0.1.20"
 
 [workspace]

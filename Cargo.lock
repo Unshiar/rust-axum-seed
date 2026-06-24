@@ -970,6 +970,7 @@ name = "entities"
 version = "0.1.0"
 dependencies = [
  "sea-orm",
+ "sea-orm-migration",
  "serde",
 ]
 
@@ -3202,6 +3203,7 @@ dependencies = [
  "entities",
  "migration",
  "sea-orm",
+ "sea-orm-migration",
  "serde",
  "serde_repr",
  "tokio",

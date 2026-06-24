@@ -14,14 +14,9 @@ impl MigrationTrait for Migration {
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        manager
-            .drop_table(
-                Table::drop()
-                    .table(entities::user::Entity)
-                    .if_exists()
-                    .to_owned(),
-            )
-            .await?;
+        for table in get_all_tables().iter().rev() {
+            table.drop_table_if_exists(manager).await?;
+        }
 
         Ok(())
     }

@@ -8,7 +8,7 @@ pub async fn register_tables(db: &DatabaseConnection) -> Result<(), DbErr> {
     let schema_manager = SchemaManager::new(db);
 
     for table in get_all_tables() {
-        table.create_table_safe(&schema_manager).await?;
+        table.create_table_if_not_exist(&schema_manager).await?;
     }
 
     Ok(())

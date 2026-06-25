@@ -1,4 +1,4 @@
-pub use sea_orm_migration::prelude::*;
+use entities::sea_orm_migration::prelude::*;
 
 mod m20260624_074014_initial_schema;
 

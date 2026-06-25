@@ -1,8 +1,8 @@
 use crate::database::state::AppState;
 use crate::errors::api::ApiError;
 use axum::{Json, extract::State, http::StatusCode};
+use entities::sea_orm::*;
 use entities::{user, user::Entity as User};
-use sea_orm::*;
 use serde::{Deserialize, Serialize};
 
 // Получить пользователя по ID

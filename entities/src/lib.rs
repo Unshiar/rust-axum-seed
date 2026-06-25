@@ -1,4 +1,6 @@
 pub mod user;
+pub use sea_orm;
+pub use sea_orm_migration;
 
 use sea_orm::{DbErr, EntityTrait, Schema};
 use sea_orm_migration::prelude::Table;

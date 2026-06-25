@@ -3201,8 +3201,6 @@ dependencies = [
  "axum",
  "entities",
  "migration",
- "sea-orm",
- "sea-orm-migration",
  "serde",
  "serde_repr",
  "tokio",

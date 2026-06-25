@@ -1,5 +1,5 @@
-use sea_orm::Database;
-use sea_orm_migration::MigratorTrait;
+use entities::sea_orm::Database;
+use entities::sea_orm_migration::MigratorTrait;
 use std::net::SocketAddr;
 
 mod database;

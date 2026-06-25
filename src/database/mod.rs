@@ -1,6 +1,6 @@
 use entities::get_all_tables;
-use sea_orm::{DatabaseConnection, DbErr};
-use sea_orm_migration::SchemaManager;
+use entities::sea_orm::{DatabaseConnection, DbErr};
+use entities::sea_orm_migration::SchemaManager;
 
 pub mod state;
 

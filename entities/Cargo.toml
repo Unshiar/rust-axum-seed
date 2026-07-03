@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-sea-orm = { workspace = true } # Наследование из корня воркспейса
+sea-orm = { workspace = true }
 sea-orm-migration  = { workspace = true }
-serde = { workspace = true }   # Наследование из корня воркспейса
+serde = { workspace = true }
+tracing = { workspace = true}

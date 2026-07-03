@@ -5,13 +5,17 @@ use std::net::SocketAddr;
 mod database;
 mod errors;
 mod handlers;
+mod log;
 
 use database::{register_tables, state::AppState};
 use handlers::register_handlers;
+use log::init_logging;
 use migration::Migrator;
 
 #[tokio::main]
 async fn main() {
+    init_logging();
+
     let db_url = "postgres://user:user@localhost:5432/db-test";
     let db = Database::connect(db_url)
         .await
@@ -20,11 +24,15 @@ async fn main() {
     if cfg!(debug_assertions) {
         register_tables(&db).await.unwrap();
     } else {
-        println!("Release migration - start.");
-        Migrator::up(&db, None)
-            .await
-            .expect("Error while migration");
-        println!("Release migration - done.");
+        match Migrator::up(&db, None).await {
+            Ok(_) => {
+                tracing::info!("Successfully applied migrations");
+            }
+            Err(e) => {
+                tracing::error!("Failed to apply migrations: {:?}", e);
+                std::process::exit(1);
+            }
+        }
     }
 
     let state = AppState { db };
@@ -34,6 +42,6 @@ async fn main() {
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
 
-    println!("Server started on http://{}", addr);
+    tracing::info!("Server started on http://{}", addr);
     axum::serve(listener, app).await.unwrap();
 }

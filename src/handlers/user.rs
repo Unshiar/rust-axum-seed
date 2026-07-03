@@ -32,7 +32,6 @@ pub struct UserId {
     id: i32,
 }
 
-// Создать пользователя
 pub async fn create_user(
     State(state): State<AppState>,
     Json(payload): Json<CreateUserDto>,

@@ -2,12 +2,15 @@ use entities::sea_orm::Database;
 use entities::sea_orm_migration::MigratorTrait;
 use std::net::SocketAddr;
 
+mod constants;
 mod database;
+mod env_handle;
 mod errors;
 mod handlers;
 mod log;
 
 use database::{register_tables, state::AppState};
+use env_handle::{get_env_db_url, get_env_host, get_env_port};
 use handlers::register_handlers;
 use log::init_logging;
 use migration::Migrator;
@@ -16,7 +19,7 @@ use migration::Migrator;
 async fn main() {
     init_logging();
 
-    let db_url = "postgres://user:user@localhost:5432/db-test";
+    let db_url = get_env_db_url();
     let db = Database::connect(db_url)
         .await
         .expect("Can't connect to database");
@@ -36,10 +39,12 @@ async fn main() {
     }
 
     let state = AppState { db };
-
     let app = register_handlers(state);
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let host = get_env_host();
+    let port = get_env_port();
+
+    let addr = SocketAddr::from((host, port));
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
 
     tracing::info!("Server started on http://{}", addr);

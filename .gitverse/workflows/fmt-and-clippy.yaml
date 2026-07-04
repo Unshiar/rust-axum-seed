@@ -1,0 +1,23 @@
+name: Rust fmt and clippy
+
+on: push
+
+jobs:
+  fmt_and_clippy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          rust-version: '1.96.0'
+
+      - name: fmt
+        run: cargo fmt --check
+
+      - name: clippy
+        run: cargo clippy

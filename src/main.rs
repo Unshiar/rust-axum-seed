@@ -16,37 +16,40 @@ use log::init_logging;
 use migration::Migrator;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     init_logging();
 
-    let db_url = get_env_db_url();
-    let db = Database::connect(db_url)
+    let db = Database::connect(get_env_db_url())
         .await
-        .expect("Can't connect to database");
+        .inspect_err(|er| {
+            tracing::error!("Can't connect to database: {}", er);
+        })?;
 
     if cfg!(debug_assertions) {
-        register_tables(&db).await.unwrap();
+        register_tables(&db).await.inspect_err(|er| {
+            tracing::error!("Can't register tables: {}", er);
+        })?;
     } else {
-        match Migrator::up(&db, None).await {
-            Ok(_) => {
-                tracing::info!("Successfully applied migrations");
-            }
-            Err(e) => {
-                tracing::error!("Failed to apply migrations: {:?}", e);
-                std::process::exit(1);
-            }
-        }
+        Migrator::up(&db, None)
+            .await
+            .inspect_err(|_| tracing::error!("Failed to apply migrations"))?;
+        tracing::info!("Successfully applied migrations");
     }
 
     let state = AppState { db };
     let app = register_handlers(state);
 
-    let host = get_env_host();
-    let port = get_env_port();
-
-    let addr = SocketAddr::from((host, port));
-    let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
-
+    let addr = SocketAddr::from((get_env_host()?, get_env_port()?));
+    let listener = tokio::net::TcpListener::bind(&addr)
+        .await
+        .inspect_err(|er| {
+            tracing::error!("Failed to bind to {}: {}", addr, er);
+        })?;
     tracing::info!("Server started on http://{}", addr);
-    axum::serve(listener, app).await.unwrap();
+
+    axum::serve(listener, app).await.inspect_err(|er| {
+        tracing::error!("Server startup error: {}", er);
+    })?;
+
+    Ok(())
 }

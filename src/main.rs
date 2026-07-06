@@ -19,10 +19,11 @@ use migration::Migrator;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     init_logging();
 
-    let db_url = get_env_db_url();
-    let db = Database::connect(db_url).await.inspect_err(|er| {
-        tracing::error!("Can't connect to database: {}", er);
-    })?;
+    let db = Database::connect(get_env_db_url())
+        .await
+        .inspect_err(|er| {
+            tracing::error!("Can't connect to database: {}", er);
+        })?;
 
     if cfg!(debug_assertions) {
         register_tables(&db).await?;

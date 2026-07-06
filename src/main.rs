@@ -16,16 +16,16 @@ use log::init_logging;
 use migration::Migrator;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     init_logging();
 
     let db_url = get_env_db_url();
-    let db = Database::connect(db_url)
-        .await
-        .expect("Can't connect to database");
+    let db = Database::connect(db_url).await.inspect_err(|error| {
+        tracing::error!("Can't connect to database: {}", error);
+    })?;
 
     if cfg!(debug_assertions) {
-        register_tables(&db).await.unwrap();
+        register_tables(&db).await?;
     } else {
         match Migrator::up(&db, None).await {
             Ok(_) => {
@@ -41,12 +41,13 @@ async fn main() {
     let state = AppState { db };
     let app = register_handlers(state);
 
-    let host = get_env_host();
-    let port = get_env_port();
-
+    let host = get_env_host()?;
+    let port = get_env_port()?;
     let addr = SocketAddr::from((host, port));
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
 
     tracing::info!("Server started on http://{}", addr);
     axum::serve(listener, app).await.unwrap();
+
+    Ok(())
 }

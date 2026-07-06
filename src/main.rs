@@ -20,8 +20,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     init_logging();
 
     let db_url = get_env_db_url();
-    let db = Database::connect(db_url).await.inspect_err(|error| {
-        tracing::error!("Can't connect to database: {}", error);
+    let db = Database::connect(db_url).await.inspect_err(|er| {
+        tracing::error!("Can't connect to database: {}", er);
     })?;
 
     if cfg!(debug_assertions) {
@@ -31,8 +31,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             Ok(_) => {
                 tracing::info!("Successfully applied migrations");
             }
-            Err(e) => {
-                tracing::error!("Failed to apply migrations: {:?}", e);
+            Err(er) => {
+                tracing::error!("Failed to apply migrations: {:?}", er);
                 std::process::exit(1);
             }
         }
@@ -44,10 +44,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let host = get_env_host()?;
     let port = get_env_port()?;
     let addr = SocketAddr::from((host, port));
-    let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
+    let listener = tokio::net::TcpListener::bind(&addr)
+        .await
+        .inspect_err(|er| {
+            tracing::error!("Failed to bind to {}: {}", addr, er);
+        })?;
 
     tracing::info!("Server started on http://{}", addr);
-    axum::serve(listener, app).await.unwrap();
+    axum::serve(listener, app).await?;
 
     Ok(())
 }

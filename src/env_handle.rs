@@ -18,8 +18,8 @@ pub fn get_env_host() -> Result<Ipv4Addr, AddrParseError> {
             HOST_DEFAULT.to_string()
         })
         .parse::<Ipv4Addr>()
-        .inspect_err(|error| {
-            tracing::error!("env '{ENV_HOST_NAME}' should be IPv4 format: {}", error);
+        .inspect_err(|er| {
+            tracing::error!("env '{ENV_HOST_NAME}' should be IPv4 format: {}", er);
         })
 }
 
@@ -30,10 +30,10 @@ pub fn get_env_port() -> Result<u16, ParseIntError> {
             PORT_DEFAULT.to_string()
         })
         .parse::<u16>()
-        .inspect_err(|error| {
+        .inspect_err(|er| {
             tracing::error!(
                 "env '{ENV_PORT_NAME}' should be in range [0, 65535]: {}",
-                error
+                er
             );
         })
 }

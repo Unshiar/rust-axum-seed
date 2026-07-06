@@ -49,9 +49,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .inspect_err(|er| {
             tracing::error!("Failed to bind to {}: {}", addr, er);
         })?;
-
     tracing::info!("Server started on http://{}", addr);
-    axum::serve(listener, app).await?;
+
+    axum::serve(listener, app).await.inspect_err(|er| {
+        tracing::error!("Server startup error: {}", er);
+    })?;
 
     Ok(())
 }

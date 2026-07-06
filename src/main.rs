@@ -26,7 +26,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         })?;
 
     if cfg!(debug_assertions) {
-        register_tables(&db).await?;
+        register_tables(&db).await.inspect_err(|er| {
+            tracing::error!("Can't register tables: {}", er);
+        })?;
     } else {
         Migrator::up(&db, None)
             .await

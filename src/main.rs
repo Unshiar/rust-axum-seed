@@ -27,23 +27,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     if cfg!(debug_assertions) {
         register_tables(&db).await?;
     } else {
-        match Migrator::up(&db, None).await {
-            Ok(_) => {
-                tracing::info!("Successfully applied migrations");
-            }
-            Err(er) => {
-                tracing::error!("Failed to apply migrations: {:?}", er);
-                std::process::exit(1);
-            }
-        }
+        Migrator::up(&db, None)
+            .await
+            .inspect_err(|_| tracing::error!("Failed to apply migrations"))?;
+        tracing::info!("Successfully applied migrations");
     }
 
     let state = AppState { db };
     let app = register_handlers(state);
 
-    let host = get_env_host()?;
-    let port = get_env_port()?;
-    let addr = SocketAddr::from((host, port));
+    let addr = SocketAddr::from((get_env_host()?, get_env_port()?));
     let listener = tokio::net::TcpListener::bind(&addr)
         .await
         .inspect_err(|er| {

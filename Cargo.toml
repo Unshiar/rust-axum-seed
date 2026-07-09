@@ -1,11 +1,11 @@
 [package]
 name = "axum-app"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 
 [workspace.dependencies]
-sea-orm = { version = "2.0.0-rc.41", features = ["sqlx-postgres", "runtime-tokio-rustls"] }
-sea-orm-migration = { version = "2.0.0-rc.41", features = ["sqlx-postgres", "runtime-tokio-rustls"] }
+sea-orm = { version = "2.0.0-rc.41", features = ["sqlx-postgres", "sqlx-sqlite", "runtime-tokio-rustls"] }
+sea-orm-migration = { version = "2.0.0-rc.41", features = ["sqlx-postgres", "sqlx-sqlite", "runtime-tokio-rustls"] }
 serde = { version = "1.0.228", features = ["derive"] }
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
@@ -19,6 +19,8 @@ tokio = { version = "1.52.3", features = ["full"] }
 serde_repr = "0.1.20"
 tracing = { workspace = true}
 tracing-subscriber = { workspace = true}
+sea-orm = { workspace = true, }
+sea-orm-migration = { workspace = true, }
 
 [workspace]
 members = [

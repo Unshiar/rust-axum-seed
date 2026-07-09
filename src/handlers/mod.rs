@@ -2,8 +2,8 @@ pub mod user;
 
 use crate::database::state::AppState;
 use crate::handlers::user::{create_user, delete_user, get_user, get_users};
-use axum::Router;
 use axum::routing::{delete, get, post};
+use axum::Router;
 
 pub fn register_handlers(state: AppState) -> Router {
     Router::new()

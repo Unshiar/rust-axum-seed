@@ -4,13 +4,14 @@ pub use sea_orm_migration;
 
 use sea_orm::{DbErr, EntityTrait, Schema};
 use sea_orm_migration::prelude::Table;
-use sea_orm_migration::{SchemaManager, async_trait};
+use sea_orm_migration::{async_trait, SchemaManager};
 
 #[async_trait::async_trait]
 pub trait ManageSchema {
     async fn create_table_if_not_exist(&self, manager: &SchemaManager) -> Result<(), DbErr>;
     async fn create_table_force(&self, manager: &SchemaManager) -> Result<(), DbErr>;
     async fn drop_table_if_exists(&self, manager: &SchemaManager) -> Result<(), DbErr>;
+    async fn is_table_exist(&self, manager: &SchemaManager) -> Result<bool, DbErr>;
 }
 
 #[async_trait::async_trait]
@@ -19,7 +20,7 @@ where
     E: EntityTrait + Sync,
 {
     async fn create_table_if_not_exist(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        let table_name = self.to_string();
+        let table_name = self.table_name();
         if !manager.has_table(&table_name).await? {
             tracing::debug!("[DB] Table '{}' does not exists. Creating...", table_name);
             self.create_table_force(manager).await?;
@@ -41,6 +42,10 @@ where
         manager
             .drop_table(Table::drop().table(*self).if_exists().to_owned())
             .await
+    }
+
+    async fn is_table_exist(&self, manager: &SchemaManager) -> Result<bool, DbErr> {
+        manager.has_table(&self.table_name()).await
     }
 }
 

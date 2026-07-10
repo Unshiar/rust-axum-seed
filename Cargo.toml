@@ -22,6 +22,9 @@ tracing-subscriber = { workspace = true}
 sea-orm = { workspace = true, }
 sea-orm-migration = { workspace = true, }
 
+[dev-dependencies]
+serial_test = "3"
+
 [workspace]
 members = [
     ".",

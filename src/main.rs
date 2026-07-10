@@ -2,17 +2,10 @@ use entities::sea_orm::Database;
 use entities::sea_orm_migration::MigratorTrait;
 use std::net::SocketAddr;
 
-mod constants;
-mod database;
-mod env_handle;
-mod errors;
-mod handlers;
-mod log;
-
-use database::{register_tables, state::AppState};
-use env_handle::{get_env_db_url, get_env_host, get_env_port};
-use handlers::register_handlers;
-use log::init_logging;
+use axum_app::database::{register_tables, state::AppState};
+use axum_app::handlers::register_handlers;
+use axum_app::log::init_logging;
+use axum_app::misc::env_handle::{get_env_db_url, get_env_host, get_env_port};
 use migration::Migrator;
 
 #[tokio::main]

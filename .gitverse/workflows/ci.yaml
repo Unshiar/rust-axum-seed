@@ -20,13 +20,13 @@ jobs:
         run: cargo fmt --check
 
       - name: clippy app
-        run: cargo clippy
+        run: cargo clippy -- -D warnings
 
       - name: clippy unit tests
-        run: cargo clippy --lib
+        run: cargo clippy --tests -- -D warnings
 
       - name: clippy integration tests
-        run: cargo clippy --test integration_test
+        run: cargo clippy --test integration_test -- -D warnings
 
   tests:
     runs-on: ubuntu-latest
@@ -40,7 +40,6 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: 1.96.0
-          components: rustfmt, clippy
 
       - name: Cargo build
         run: cargo build

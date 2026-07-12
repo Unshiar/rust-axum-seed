@@ -1,12 +1,11 @@
-use entities::sea_orm::Database;
-use entities::sea_orm_migration::MigratorTrait;
-use std::net::SocketAddr;
-
 use axum_app::database::{register_tables, state::AppState};
 use axum_app::handlers::register_handlers;
 use axum_app::log::init_logging;
 use axum_app::misc::env_handle::{get_env_db_url, get_env_host, get_env_port};
+use entities::sea_orm::Database;
+use entities::sea_orm_migration::MigratorTrait;
 use migration::Migrator;
+use std::net::SocketAddr;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

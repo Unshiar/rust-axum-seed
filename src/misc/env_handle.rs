@@ -1,4 +1,4 @@
-use std::net::{AddrParseError, Ipv4Addr};
+use std::net::{AddrParseError, Ipv4Addr, SocketAddr};
 use std::num::ParseIntError;
 
 pub const ENV_DB_USER_NAME: &str = "DATABASE_USER";
@@ -42,11 +42,21 @@ pub fn get_env_host_by_name(
 ) -> Result<Ipv4Addr, AddrParseError> {
     let host_str = get_str_env_by_name(env_name, &default_value.to_string());
 
-    host_str.parse::<Ipv4Addr>()
+    host_str.parse::<Ipv4Addr>().inspect_err(|err| {
+        tracing::error!("env '{env_name}' should be IPv4 format: {}", err);
+    })
 }
 
 pub fn get_env_port_by_name(env_name: &str, default_value: u16) -> Result<u16, ParseIntError> {
     let port_str = get_str_env_by_name(env_name, &default_value.to_string());
 
-    port_str.parse::<u16>()
+    port_str.parse::<u16>().inspect_err(|err| {
+        tracing::error!("env '{env_name}' should be in range [0, 65535]: {}", err);
+    })
+}
+
+pub fn build_socket_addr() -> Result<SocketAddr, Box<dyn std::error::Error>> {
+    let host = get_env_host_by_name(ENV_HOST_NAME, HOST_DEFAULT)?;
+    let port = get_env_port_by_name(ENV_PORT_NAME, PORT_DEFAULT)?;
+    Ok(SocketAddr::from((host, port)))
 }

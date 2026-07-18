@@ -244,11 +244,11 @@ The binary will be available at `target/release/axum-app`
 
 - Add new model to `entities/src/<entity_name>.rs` as module
 - Add new handler to `src/handlers/<entity_name>.rs` as module
-- Register the new route(s) in the `src/handlers/mod.rs` file in the `register_handlers` function
+- Register the new route(s) in the `src/handlers/mod.rs` file in the `register_handlers()` function
 
 To create a new table in the database for your entity:
 
-- Register it in the `get_all_tables()` function in the`entities/src/lib.rs` file
+- Register it in the `get_all_tables()` function in the `entities/src/lib.rs` file
 ```
 pub fn get_all_tables() -> Vec<&'static (dyn ManageSchema + Sync)> {
     vec![&user::Entity]

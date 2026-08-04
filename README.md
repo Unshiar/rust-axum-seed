@@ -318,6 +318,43 @@ cargo test --test integration_test
 
 - Change the `PORT` env var: `PORT=8000 cargo run`
 
+## How to get a clean app (without current user logic)
+
+It's pretty simple. Follow the steps below:
+
+1. Force remove `handlers/user.rs` file
+2. Edit `handlers/mod.rs` file:
+   - remove code line `pub mod user;`
+   - remove code line `use crate::handlers::user::{create_user, delete_user, get_user, get_users};`
+   - remove user routes in `register_handlers(state: AppState) -> Router` function:
+   ```
+        // User routes
+        .route("/user", post(create_user))
+        .route("/user/{id}", get(get_user))
+        .route("/user/{id}", delete(delete_user))
+        .route("/users", get(get_users))
+   ```
+3. Force remove `errors/user.rs` file
+4. Edit `errors/mod.rs` file
+   - remove code line `pub mod user;`
+5. Force remove `entities/src/user.rs` file
+6. Edit `entities/src/lib.rs` file:
+   - remove code line `pub mod user;`
+   - edit `get_all_tables()` function, it should return `vec![]`
+7. Run `cargo clippy` command. There should be no errors, fix warnings.
+8. Edit `tests/integration_test.rs` file:
+   - add `#[ignore]` to `test_migrator_up_after_register_tables()` test, like this:
+   ```
+    #[ignore]
+    #[tokio::test]
+    async fn test_migrator_up_after_register_tables() {
+   ```
+   Or add `#[ignore]` to all tests, if you want to modify them in the future. Or remove
+   all of them, if they have become irrelevant.
+9. Commands`cargo clippy` and `cargo test` should not produce errors.
+
+Now you can write your own entities, endpoints and handlers, errors. Rewrite init migration if needed.
+
 ## License
 
 MIT License - see [LICENSE](./LICENSE) file for details

@@ -20,6 +20,7 @@ Suitable for MVPs, startups, or anyone wanting to try using Rust as a REST API a
 - **Runtime**: [Tokio](https://tokio.rs/)
 - **Database**: PostgreSQL / SQLite via [SeaORM 2.0](https://www.sea-ql.org/SeaORM/)
 - **Serialization**: [Serde](https://serde.rs/)
+- **Validation**: [validator](https://github.com/Keats/validator)
 - **Logging**: [Tracing & Tracing-Subscriber](https://tokio.rs/tokio/topics/tracing)
 
 ## Project Structure
@@ -351,7 +352,15 @@ It's pretty simple. Follow the steps below:
    ```
    Or add `#[ignore]` to all tests, if you want to modify them in the future. Or remove
    all of them, if they have become irrelevant.
-9. Commands`cargo clippy` and `cargo test` should not produce errors.
+9. Comment or remove unnecessary error codes in `errors/codes.rs` file:
+   ```
+   pub enum ApiErrorCodes {
+   InternalError = 3000,
+   // UserNotFound = 3001,
+   // InvalidCreateUserData = 3002,
+   }
+   ```
+10. Commands`cargo clippy` and `cargo test` should not produce errors.
 
 Now you can write your own entities, endpoints and handlers, errors. Rewrite init migration if needed.
 

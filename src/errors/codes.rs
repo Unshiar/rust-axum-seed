@@ -5,4 +5,5 @@ use serde_repr::*;
 pub enum ApiErrorCodes {
     InternalError = 3000,
     UserNotFound = 3001,
+    InvalidCreateUserData = 3002,
 }

@@ -8,7 +8,8 @@ impl ApiError {
         Self {
             status: StatusCode::INTERNAL_SERVER_ERROR,
             error: ApiErrorCodes::InternalError,
-            message: format!("Internal database error: {}", er),
+            message: "Internal database error".to_owned(),
+            details: serde_json::json!(er.to_string()),
         }
     }
 }

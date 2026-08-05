@@ -17,10 +17,12 @@ entities = { path = "entities"}
 serde = { workspace = true }
 tokio = { version = "1.52.3", features = ["full"] }
 serde_repr = "0.1.20"
+serde_json = "1.0"
 tracing = { workspace = true}
 tracing-subscriber = { workspace = true}
 sea-orm = { workspace = true, }
 sea-orm-migration = { workspace = true, }
+validator = { version = "0.21.0", features = ["derive"] }
 
 [dev-dependencies]
 serial_test = "3"

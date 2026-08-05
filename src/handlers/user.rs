@@ -4,6 +4,7 @@ use axum::{extract::State, http::StatusCode, Json};
 use entities::sea_orm::*;
 use entities::{user, user::Entity as User};
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
 pub async fn get_user(
     State(state): State<AppState>,
@@ -29,9 +30,11 @@ pub async fn get_users(State(state): State<AppState>) -> Result<Json<Vec<user::M
     Ok(Json(users))
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Validate)]
 pub struct CreateUserDto {
+    #[validate(length(min = 5))]
     name: String,
+    #[validate(email)]
     email: String,
 }
 
@@ -44,6 +47,11 @@ pub async fn create_user(
     State(state): State<AppState>,
     Json(payload): Json<CreateUserDto>,
 ) -> Result<(StatusCode, Json<UserId>), ApiError> {
+    match payload.validate() {
+        Ok(_) => (),
+        Err(er) => Err(ApiError::invalid_create_user_data(&er))?,
+    }
+
     let new_user = user::ActiveModel {
         id: NotSet,
         name: Set(payload.name),

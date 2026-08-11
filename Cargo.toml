@@ -23,6 +23,8 @@ tracing-subscriber = { workspace = true}
 sea-orm = { workspace = true, }
 sea-orm-migration = { workspace = true, }
 validator = { version = "0.21.0", features = ["derive"] }
+utoipa = { version = "5.5.0", features = ["axum_extras"] }
+utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
 
 [dev-dependencies]
 serial_test = "3"

@@ -2,10 +2,24 @@ use crate::database::state::AppState;
 use crate::errors::api::ApiError;
 use axum::{extract::State, http::StatusCode, Json};
 use entities::sea_orm::*;
+use entities::user::Model;
 use entities::{user, user::Entity as User};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
+#[utoipa::path(
+    get,
+    path = "/users/{id}",
+    params(
+        ("id" = i32, Path, description = "User unique identifier")
+    ),
+    responses(
+        (status = 200, description = "User successfully found", body = Model),
+        (status = 404, description = "User not found"),
+        (status = 500, description = "Database error"),
+    ),
+    tag = "Users",
+)]
 pub async fn get_user(
     State(state): State<AppState>,
     axum::extract::Path(id): axum::extract::Path<i32>,

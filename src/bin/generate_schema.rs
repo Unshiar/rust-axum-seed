@@ -6,7 +6,7 @@ use std::io::{BufWriter, Write};
 fn main() {
     init_logging();
 
-    tracing::info!("Generating API");
+    tracing::info!("Generating API...");
     let json = ApiDoc::openapi()
         .to_pretty_json()
         .expect("Failed to serialize OpenAPI to json");

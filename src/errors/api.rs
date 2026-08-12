@@ -20,6 +20,10 @@ impl ApiError {
     pub fn message(&self) -> &str {
         self.message.as_str()
     }
+
+    pub fn add_details(self, details: Value) -> Self {
+        Self { details, ..self }
+    }
 }
 
 impl IntoResponse for ApiError {

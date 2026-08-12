@@ -27,7 +27,7 @@ pub async fn get_user(
     let user = User::find_by_id(id)
         .one(&state.db)
         .await
-        .map_err(|er| ApiError::internal_bd(&er))?;
+        .map_err(|er| ApiError::internal_bd().add_details(serde_json::json!(er.to_string())))?;
 
     match user {
         Some(user) => Ok(Json(user)),
@@ -39,7 +39,7 @@ pub async fn get_users(State(state): State<AppState>) -> Result<Json<Vec<user::M
     let users = User::find()
         .all(&state.db)
         .await
-        .map_err(|er| ApiError::internal_bd(&er))?;
+        .map_err(|er| ApiError::internal_bd().add_details(serde_json::json!(er.to_string())))?;
 
     Ok(Json(users))
 }
@@ -63,7 +63,7 @@ pub async fn create_user(
 ) -> Result<(StatusCode, Json<UserId>), ApiError> {
     match payload.validate() {
         Ok(_) => (),
-        Err(er) => Err(ApiError::invalid_create_user_data(&er))?,
+        Err(er) => Err(ApiError::invalid_create_user_data().add_details(serde_json::json!(er)))?,
     }
 
     let new_user = user::ActiveModel {
@@ -75,7 +75,7 @@ pub async fn create_user(
     let inserted_user = new_user
         .insert(&state.db)
         .await
-        .map_err(|er| ApiError::internal_bd(&er))?;
+        .map_err(|er| ApiError::internal_bd().add_details(serde_json::json!(er.to_string())))?;
 
     Ok((
         StatusCode::CREATED,
@@ -92,7 +92,7 @@ pub async fn delete_user(
     let user = User::delete_by_id(id)
         .exec_with_returning(&state.db)
         .await
-        .map_err(|er| ApiError::internal_bd(&er))?;
+        .map_err(|er| ApiError::internal_bd().add_details(serde_json::json!(er.to_string())))?;
 
     match user {
         Some(user) => Ok((StatusCode::OK, Json(UserId { id: user.id }))),

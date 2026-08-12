@@ -63,7 +63,7 @@ pub async fn create_user(
 ) -> Result<(StatusCode, Json<UserId>), ApiError> {
     payload
         .validate()
-        .map_err(|er| ApiError::internal_bd().add_details(serde_json::json!(er)))?;
+        .map_err(|er| ApiError::invalid_create_user_data().add_details(serde_json::json!(er)))?;
 
     let new_user = user::ActiveModel {
         id: NotSet,

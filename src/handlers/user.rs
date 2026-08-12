@@ -9,13 +9,13 @@ use validator::Validate;
 
 #[utoipa::path(
     get,
-    path = "/users/{id}",
+    path = "/user/{id}",
     params(
         ("id" = i32, Path, description = "User unique identifier")
     ),
     responses(
         (status = 200, description = "User successfully found", body = Model),
-        (status = 404, description = "User not found"),
+        (status = 404, description = "User not found", body = ApiError),
         (status = 500, description = "Database error"),
     ),
     tag = "Users",

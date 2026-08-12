@@ -6,10 +6,20 @@ use crate::handlers::health::health_status;
 use crate::handlers::user::{create_user, delete_user, get_user, get_users};
 use axum::routing::{delete, get, post};
 use axum::Router;
+use tower_http::cors::{CorsLayer, Any};
+use utoipa_swagger_ui::SwaggerUi;
+use crate::api::ApiDoc;
 
+fn configure_cors() -> CorsLayer {
+    CorsLayer::new()
+        .allow_origin(Any)
+        .allow_methods(Any)
+        .allow_headers(Any)
+}
 pub fn register_handlers(state: AppState) -> Router {
     Router::new()
         // User routes
+        .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .route("/user", post(create_user))
         .route("/user/{id}", get(get_user))
         .route("/user/{id}", delete(delete_user))
@@ -17,4 +27,5 @@ pub fn register_handlers(state: AppState) -> Router {
         // Health routes
         .route("/health", get(health_status))
         .with_state(state)
+        .layer(configure_cors())
 }

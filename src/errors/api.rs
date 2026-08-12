@@ -4,10 +4,12 @@ use axum::response::IntoResponse;
 use axum::Json;
 use serde::Serialize;
 use serde_json::Value;
+use utoipa::ToSchema;
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct ApiError {
     #[serde(skip_serializing)]
+    #[schema(ignore)]
     pub status: StatusCode,
     pub error: ApiErrorCodes,
     pub message: String, // user-friendly error message (for example for FE)

@@ -1,7 +1,7 @@
 mod user;
 
 use crate::api::user::*;
-use utoipa::openapi::InfoBuilder;
+use utoipa::openapi::{InfoBuilder, Server};
 use utoipa::OpenApi;
 
 pub struct ApiDoc;
@@ -14,6 +14,8 @@ impl ApiDoc {
             .title(env!("CARGO_PKG_NAME"))
             .version(env!("CARGO_PKG_VERSION"))
             .build();
+
+        main_api.servers = Some(vec![Server::new("http://localhost:8080")]);
 
         main_api.merge(UserApi::openapi());
 

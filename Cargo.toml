@@ -9,7 +9,7 @@ sea-orm-migration = { version = "2.0.0-rc.41", features = ["sqlx-postgres", "sql
 serde = { version = "1.0.228", features = ["derive"] }
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
-utoipa = { version = "5.5.0", features = ["axum_extras"] }
+utoipa = { version = "5.5.0", features = ["axum_extras", "repr"] }
 
 [dependencies]
 axum = "0.8.9"
@@ -25,6 +25,8 @@ sea-orm = { workspace = true, }
 sea-orm-migration = { workspace = true, }
 validator = { version = "0.21.0", features = ["derive"] }
 utoipa = { workspace = true }
+tower-http = { version = "0.7.0", features = ["cors"] }
+utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
 
 [dev-dependencies]
 serial_test = "3"

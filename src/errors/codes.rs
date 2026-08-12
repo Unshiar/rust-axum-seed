@@ -3,7 +3,6 @@ use utoipa::ToSchema;
 
 #[derive(Serialize_repr, ToSchema)]
 #[repr(u32)]
-#[schema(as = u32)]
 pub enum ApiErrorCodes {
     InternalError = 3000,
     UserNotFound = 3001,

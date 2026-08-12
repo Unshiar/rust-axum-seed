@@ -15,7 +15,7 @@ use validator::Validate;
     ),
     responses(
         (status = 200, description = "User successfully found", body = Model),
-        (status = 404, description = "User not found", body = ApiError),
+        (status = 404, description = "User not found", body = ApiError, example =  json!(ApiError::user_not_found())),
         (status = 500, description = "Database error"),
     ),
     tag = "Users",

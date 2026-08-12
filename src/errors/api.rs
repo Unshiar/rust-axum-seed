@@ -16,6 +16,12 @@ pub struct ApiError {
     pub details: Value,  // any additional error message
 }
 
+impl ApiError {
+    pub fn message(&self) -> &str {
+        self.message.as_str()
+    }
+}
+
 impl IntoResponse for ApiError {
     fn into_response(self) -> axum::response::Response {
         (self.status, Json(self)).into_response()

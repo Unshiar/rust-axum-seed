@@ -1,14 +1,14 @@
 pub mod health;
 pub mod user;
 
+use crate::api::ApiDoc;
 use crate::database::state::AppState;
 use crate::handlers::health::health_status;
 use crate::handlers::user::{create_user, delete_user, get_user, get_users};
 use axum::routing::{delete, get, post};
 use axum::Router;
-use tower_http::cors::{CorsLayer, Any};
+use tower_http::cors::{Any, CorsLayer};
 use utoipa_swagger_ui::SwaggerUi;
-use crate::api::ApiDoc;
 
 fn configure_cors() -> CorsLayer {
     CorsLayer::new()

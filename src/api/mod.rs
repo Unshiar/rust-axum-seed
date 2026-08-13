@@ -1,5 +1,7 @@
+mod health;
 mod user;
 
+use crate::api::health::*;
 use crate::api::user::*;
 use utoipa::openapi::{InfoBuilder, Server};
 use utoipa::OpenApi;
@@ -18,6 +20,7 @@ impl ApiDoc {
         main_api.servers = Some(vec![Server::new("http://localhost:8080")]);
 
         main_api.merge(UserApi::openapi());
+        main_api.merge(HealthApi::openapi());
 
         main_api
     }

@@ -27,6 +27,7 @@ pub fn register_handlers(state: AppState) -> Router {
         .route("/health", get(health_status))
         .with_state(state);
 
+    // I assume Nginx proxying will be used in the production environment. The built-in Swagger is convenient for debugging.
     if cfg!(debug_assertions) {
         router = router
             .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))

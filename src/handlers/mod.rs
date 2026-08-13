@@ -7,15 +7,9 @@ use crate::handlers::health::health_status;
 use crate::handlers::user::{create_user, delete_user, get_user, get_users};
 use axum::routing::{delete, get, post};
 use axum::Router;
-use tower_http::cors::{Any, CorsLayer};
 use utoipa_swagger_ui::SwaggerUi;
 
-fn configure_cors() -> CorsLayer {
-    CorsLayer::new()
-        .allow_origin(Any)
-        .allow_methods(Any)
-        .allow_headers(Any)
-}
+
 pub fn register_handlers(state: AppState) -> Router {
     Router::new()
         // User routes
@@ -27,5 +21,4 @@ pub fn register_handlers(state: AppState) -> Router {
         // Health routes
         .route("/health", get(health_status))
         .with_state(state)
-        .layer(configure_cors())
 }

@@ -2,7 +2,7 @@ use crate::database::state::AppState;
 use crate::errors::api::ApiError;
 use axum::{extract::State, http::StatusCode, Json};
 use entities::sea_orm::*;
-use entities::user::Model;
+use entities::user::UserResponseDto;
 use entities::{user, user::Entity as User};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -15,7 +15,7 @@ use validator::Validate;
         ("id" = i32, Path, description = "User unique identifier")
     ),
     responses(
-        (status = 200, description = "User successfully found", body = Model),
+        (status = 200, description = "User successfully found", body = UserResponseDto),
         (status = 404, description = ApiError::user_not_found().message(), body = ApiError, example =  json!(ApiError::user_not_found())),
         (status = 500, description = ApiError::internal_bd() .message(), body = ApiError, example =  json!(ApiError::internal_bd())),
     ),
@@ -24,25 +24,39 @@ use validator::Validate;
 pub async fn get_user(
     State(state): State<AppState>,
     axum::extract::Path(id): axum::extract::Path<i32>,
-) -> Result<Json<user::Model>, ApiError> {
+) -> Result<Json<UserResponseDto>, ApiError> {
     let user = User::find_by_id(id)
         .one(&state.db)
         .await
         .map_err(|er| ApiError::internal_bd().add_details(serde_json::json!(er.to_string())))?;
 
     match user {
-        Some(user) => Ok(Json(user)),
+        Some(user) => Ok(Json(user.into())),
         None => Err(ApiError::user_not_found()),
     }
 }
 
-pub async fn get_users(State(state): State<AppState>) -> Result<Json<Vec<user::Model>>, ApiError> {
+#[utoipa::path(
+    get,
+    path = "/users",
+    responses(
+        (status = 200, description = "List of users retrieved", body = [UserResponseDto]),
+        (status = 500, description = ApiError::internal_bd() .message(), body = ApiError, example =  json!(ApiError::internal_bd())),
+    ),
+    tag = "Users",
+)]
+pub async fn get_users(State(state): State<AppState>) -> Result<Json<Vec<UserResponseDto>>, ApiError> {
     let users = User::find()
         .all(&state.db)
         .await
         .map_err(|er| ApiError::internal_bd().add_details(serde_json::json!(er.to_string())))?;
 
-    Ok(Json(users))
+    let users_list = users
+        .into_iter()
+        .map(|user| user.into())
+        .collect();
+
+    Ok(Json(users_list))
 }
 
 #[derive(Deserialize, Validate, ToSchema)]

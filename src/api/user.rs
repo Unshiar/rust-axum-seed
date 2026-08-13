@@ -6,9 +6,9 @@ use utoipa::OpenApi;
 
 #[derive(OpenApi)]
 #[openapi(
-    paths(get_user, create_user, delete_user),
+    paths(get_user, get_users, create_user, delete_user),
     components(schemas(
-        user::Model,
+        user::UserResponseDto,
         UserId,
         CreateUserDto,
         ApiError,

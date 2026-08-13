@@ -9,7 +9,6 @@ use axum::routing::{delete, get, post};
 use axum::Router;
 use utoipa_swagger_ui::SwaggerUi;
 
-
 pub fn register_handlers(state: AppState) -> Router {
     Router::new()
         // User routes

@@ -11,6 +11,7 @@ pub struct ApiError {
     #[serde(skip_serializing)]
     #[schema(ignore)]
     pub status: StatusCode,
+    #[schema(value_type = u32)]
     pub error: ApiErrorCodes,
     pub message: String, // user-friendly error message (for example for FE)
     pub details: Value,  // any additional error message

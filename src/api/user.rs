@@ -6,8 +6,13 @@ use utoipa::OpenApi;
 
 #[derive(OpenApi)]
 #[openapi(
-    paths(get_user),
-    components(schemas(user::Model, ApiError, ApiErrorCodes)),
+    paths(get_user, create_user),
+    components(schemas(
+        user::Model,
+        UserId,
+        CreateUserDto,
+        ApiError,
+        ApiErrorCodes)),
     tags((name = "Users", description = "User Management Endpoints"))
 )]
 pub struct UserApi;

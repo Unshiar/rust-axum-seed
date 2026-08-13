@@ -5,6 +5,7 @@ use entities::sea_orm::*;
 use entities::user::Model;
 use entities::{user, user::Entity as User};
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 use validator::Validate;
 
 #[utoipa::path(
@@ -15,8 +16,8 @@ use validator::Validate;
     ),
     responses(
         (status = 200, description = "User successfully found", body = Model),
-        (status = 404, description = "User not found", body = ApiError, example =  json!(ApiError::user_not_found())),
-        (status = 500, description = "Database error"),
+        (status = 404, description = ApiError::user_not_found().message(), body = ApiError, example =  json!(ApiError::user_not_found())),
+        (status = 500, description = ApiError::internal_bd() .message(), body = ApiError, example =  json!(ApiError::internal_bd())),
     ),
     tag = "Users",
 )]
@@ -44,19 +45,36 @@ pub async fn get_users(State(state): State<AppState>) -> Result<Json<Vec<user::M
     Ok(Json(users))
 }
 
-#[derive(Deserialize, Validate)]
+#[derive(Deserialize, Validate, ToSchema)]
 pub struct CreateUserDto {
     #[validate(length(min = 5))]
+    #[schema(example = "UserName")]
     name: String,
     #[validate(email)]
+    #[schema(example = "user@test.com")]
     email: String,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct UserId {
-    id: i32,
+    #[schema(example = 1)]
+    pub id: i32,
 }
-
+#[utoipa::path(
+    post,
+    path = "/user",
+    request_body(description = "User create data",
+        content(
+        (CreateUserDto = "application/json"),
+        )
+    ),
+    responses(
+        (status = 201, description = "User successfully created", body = UserId),
+        (status = 400, description = ApiError::invalid_create_user_data().message(), body = ApiError, example =  json!(ApiError::invalid_create_user_data())),
+        (status = 500, description = ApiError::internal_bd() .message(), body = ApiError, example =  json!(ApiError::internal_bd())),
+    ),
+    tag = "Users",
+)]
 pub async fn create_user(
     State(state): State<AppState>,
     Json(payload): Json<CreateUserDto>,

@@ -6,7 +6,7 @@ use utoipa::OpenApi;
 
 #[derive(OpenApi)]
 #[openapi(
-    paths(get_user, create_user),
+    paths(get_user, create_user, delete_user),
     components(schemas(
         user::Model,
         UserId,

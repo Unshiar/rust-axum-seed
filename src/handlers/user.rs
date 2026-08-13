@@ -102,6 +102,19 @@ pub async fn create_user(
     ))
 }
 
+#[utoipa::path(
+    delete,
+    path = "/user/{id}",
+    params(
+        ("id" = i32, Path, description = "User unique identifier")
+    ),
+    responses(
+        (status = 200, description = "User successfully deleted", body = UserId),
+        (status = 404, description = ApiError::user_not_found().message(), body = ApiError, example =  json!(ApiError::user_not_found())),
+        (status = 500, description = ApiError::internal_bd() .message(), body = ApiError, example =  json!(ApiError::internal_bd())),
+    ),
+    tag = "Users",
+)]
 pub async fn delete_user(
     State(state): State<AppState>,
     axum::extract::Path(id): axum::extract::Path<i32>,

@@ -17,15 +17,21 @@ fn configure_cors() -> CorsLayer {
         .allow_headers(Any)
 }
 pub fn register_handlers(state: AppState) -> Router {
-    Router::new()
+    let mut router = Router::new()
         // User routes
-        .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .route("/user", post(create_user))
         .route("/user/{id}", get(get_user))
         .route("/user/{id}", delete(delete_user))
         .route("/users", get(get_users))
         // Health routes
         .route("/health", get(health_status))
-        .with_state(state)
-        .layer(configure_cors())
+        .with_state(state);
+
+    if cfg!(debug_assertions) {
+        router = router
+            .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
+            .layer(configure_cors());
+    }
+
+    router
 }

@@ -45,16 +45,15 @@ pub async fn get_user(
     ),
     tag = "Users",
 )]
-pub async fn get_users(State(state): State<AppState>) -> Result<Json<Vec<UserResponseDto>>, ApiError> {
+pub async fn get_users(
+    State(state): State<AppState>,
+) -> Result<Json<Vec<UserResponseDto>>, ApiError> {
     let users = User::find()
         .all(&state.db)
         .await
         .map_err(|er| ApiError::internal_bd().add_details(serde_json::json!(er.to_string())))?;
 
-    let users_list = users
-        .into_iter()
-        .map(|user| user.into())
-        .collect();
+    let users_list = users.into_iter().map(|user| user.into()).collect();
 
     Ok(Json(users_list))
 }

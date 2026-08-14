@@ -2,12 +2,31 @@ use crate::database::state::AppState;
 use crate::errors::api::ApiError;
 use axum::{extract::State, http::StatusCode, Json};
 use entities::sea_orm::*;
-use entities::user::UserResponseDto;
+use entities::user::Model;
 use entities::{user, user::Entity as User};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 
+#[derive(Serialize, ToSchema)]
+pub struct UserResponseDto {
+    #[schema(example = 1)]
+    pub id: i32,
+    #[schema(example = "john_doe")]
+    pub name: String,
+    #[schema(example = "user@example.com")]
+    pub email: String,
+}
+
+impl From<Model> for UserResponseDto {
+    fn from(model: Model) -> Self {
+        Self {
+            id: model.id,
+            name: model.name,
+            email: model.email,
+        }
+    }
+}
 #[utoipa::path(
     get,
     path = "/user/{id}",

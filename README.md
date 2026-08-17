@@ -46,10 +46,16 @@ This is a **Cargo workspace** with three members:
 ├── src/                     # Main application (axum-app)
 │   ├── main.rs              # Application entry point
 │   ├── lib.rs               # Library exports
+│   ├── api/                 # OpenAPI/Swagger schema definitions
+│   │   ├── mod.rs           # API schema module
+│   │   ├── user.rs          # User API schema
+│   │   └── health.rs        # Health check API schema
 │   ├── handlers/
 │   │   ├── mod.rs           # Handler registration & router setup
 │   │   ├── user.rs          # User CRUD endpoints (create, list, get, delete)
 │   │   └── health.rs        # Health check endpoint
+│   ├── bin/
+│   │   └── generate_schema.rs # OpenAPI schema generator binary
 │   ├── database/
 │   │   ├── mod.rs           # Database utilities
 │   │   └── state.rs         # App state with DB connection
@@ -79,7 +85,9 @@ This is a **Cargo workspace** with three members:
 │       ├── lib.rs          # Migration library
 │       └── m20260624_074014_initial_schema.rs  # Initial schema migration
 ├── tests/                  # Integration tests
+│   └── integration_test.rs # Integration test suite
 ├── docker-compose.yml      # PostgreSQL service
+├── openapi.json            # Generated OpenAPI specification
 └── Cargo.toml             # Workspace configuration
 ```
 
@@ -216,6 +224,37 @@ Example (curl):
 curl -X GET http://127.0.0.1:8080/health
 # Expected response: {"status":"ok"}
 ```
+
+## API Schema & Swagger
+
+The application provides OpenAPI/Swagger documentation for interactive API exploration.
+
+### Built-in Swagger UI (Debug Mode)
+
+When running in **debug mode** (development), a built-in Swagger UI is available:
+
+```bash
+cargo run
+```
+
+Then navigate to:
+```
+http://127.0.0.1:8080/swagger-ui
+```
+
+This provides an interactive interface to explore and test all API endpoints with automatic request/response documentation.
+
+**Note:** The built-in Swagger UI is only available in debug builds. For production environments, use the generated OpenAPI schema with an external Swagger/OpenAPI viewer (e.g., Nginx proxy + Swagger UI).
+
+### Generate OpenAPI Schema
+
+To generate the OpenAPI specification as a JSON file:
+
+```bash
+cargo run --bin generate_schema
+```
+
+This will create/update the `openapi.json` file in the project root, which contains the complete API specification compatible with any OpenAPI viewer or code generator.
 
 ## Database Migrations
 

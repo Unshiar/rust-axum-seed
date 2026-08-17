@@ -2,6 +2,7 @@
 name = "axum-app"
 version = "0.1.0"
 edition = "2021"
+default-run = "axum-app"
 
 [workspace.dependencies]
 sea-orm = { version = "2.0.0-rc.41", features = ["sqlx-postgres", "sqlx-sqlite", "runtime-tokio-rustls"] }

@@ -17,6 +17,7 @@ impl ApiDoc {
             .version(env!("CARGO_PKG_VERSION"))
             .build();
 
+        // Replace or add here the new server you needed
         main_api.servers = Some(vec![Server::new("http://localhost:8080")]);
 
         main_api.merge(UserApi::openapi());

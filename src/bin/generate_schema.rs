@@ -1,5 +1,5 @@
-use axum_app::schemas::*;
 use axum_app::log::init_logging;
+use axum_app::schemas::*;
 use std::fs::File;
 use std::io::{BufWriter, Write};
 

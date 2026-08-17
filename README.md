@@ -21,6 +21,7 @@ Suitable for MVPs, startups, or anyone wanting to try using Rust as a REST API a
 - **Database**: PostgreSQL / SQLite via [SeaORM 2.0](https://www.sea-ql.org/SeaORM/)
 - **Serialization**: [Serde](https://serde.rs/)
 - **Validation**: [validator](https://github.com/Keats/validator)
+- **Api schemas**: [utoipa](https://github.com/juhaku/utoipa)
 - **Logging**: [Tracing & Tracing-Subscriber](https://tokio.rs/tokio/topics/tracing)
 
 ## Project Structure

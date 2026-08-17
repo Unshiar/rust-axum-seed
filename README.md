@@ -21,6 +21,7 @@ Suitable for MVPs, startups, or anyone wanting to try using Rust as a REST API a
 - **Database**: PostgreSQL / SQLite via [SeaORM 2.0](https://www.sea-ql.org/SeaORM/)
 - **Serialization**: [Serde](https://serde.rs/)
 - **Validation**: [validator](https://github.com/Keats/validator)
+- **Api schemas**: [utoipa](https://github.com/juhaku/utoipa)
 - **Logging**: [Tracing & Tracing-Subscriber](https://tokio.rs/tokio/topics/tracing)
 
 ## Project Structure
@@ -46,10 +47,16 @@ This is a **Cargo workspace** with three members:
 ├── src/                     # Main application (axum-app)
 │   ├── main.rs              # Application entry point
 │   ├── lib.rs               # Library exports
+│   ├── schemas/             # OpenAPI/Swagger schema definitions
+│   │   ├── mod.rs           # API schema module
+│   │   ├── user.rs          # User API schema
+│   │   └── health.rs        # Health check API schema
 │   ├── handlers/
 │   │   ├── mod.rs           # Handler registration & router setup
 │   │   ├── user.rs          # User CRUD endpoints (create, list, get, delete)
 │   │   └── health.rs        # Health check endpoint
+│   ├── bin/
+│   │   └── generate_schema.rs # OpenAPI schema generator binary
 │   ├── database/
 │   │   ├── mod.rs           # Database utilities
 │   │   └── state.rs         # App state with DB connection
@@ -79,7 +86,9 @@ This is a **Cargo workspace** with three members:
 │       ├── lib.rs          # Migration library
 │       └── m20260624_074014_initial_schema.rs  # Initial schema migration
 ├── tests/                  # Integration tests
+│   └── integration_test.rs # Integration test suite
 ├── docker-compose.yml      # PostgreSQL service
+├── openapi.json            # Generated OpenAPI specification
 └── Cargo.toml             # Workspace configuration
 ```
 
@@ -217,6 +226,37 @@ curl -X GET http://127.0.0.1:8080/health
 # Expected response: {"status":"ok"}
 ```
 
+## API Schema & Swagger
+
+The application provides OpenAPI/Swagger documentation for interactive API exploration.
+
+### Built-in Swagger UI (Debug Mode)
+
+When running in **debug mode** (development), a built-in Swagger UI is available:
+
+```bash
+cargo run
+```
+
+Then navigate to:
+```
+http://127.0.0.1:8080/swagger-ui
+```
+
+This provides an interactive interface to explore and test all API endpoints with automatic request/response documentation.
+
+**Note:** The built-in Swagger UI is only available in debug builds. For production environments, use the generated OpenAPI schema with an external Swagger/OpenAPI viewer (e.g., Nginx proxy + Swagger UI).
+
+### Generate OpenAPI Schema
+
+To generate the OpenAPI specification as a JSON file:
+
+```bash
+cargo run --bin generate_schema
+```
+
+This will create/update the `openapi.json` file in the project root, which contains the complete API specification compatible with any OpenAPI viewer or code generator.
+
 ## Database Migrations
 
 Migrations are managed via SeaORM Migration:
@@ -324,9 +364,10 @@ cargo test --test integration_test
 It's pretty simple. Follow the steps below:
 
 1. Force remove `handlers/user.rs` file
-2. Edit `handlers/mod.rs` file:
-   - remove code line `pub mod user;`
-   - remove code line `use crate::handlers::user::{create_user, delete_user, get_user, get_users};`
+2. Force remove `errors/user.rs` file
+3. Force remove `entities/src/user.rs` file
+4. Force remove `schemas/user.rs` file
+5. Edit `handlers/mod.rs` file:
    - remove user routes in `register_handlers(state: AppState) -> Router` function:
    ```
         // User routes
@@ -335,15 +376,12 @@ It's pretty simple. Follow the steps below:
         .route("/user/{id}", delete(delete_user))
         .route("/users", get(get_users))
    ```
-3. Force remove `errors/user.rs` file
-4. Edit `errors/mod.rs` file
-   - remove code line `pub mod user;`
-5. Force remove `entities/src/user.rs` file
 6. Edit `entities/src/lib.rs` file:
-   - remove code line `pub mod user;`
    - edit `get_all_tables()` function, it should return `vec![]`
-7. Run `cargo clippy` command. There should be no errors, fix warnings.
-8. Edit `tests/integration_test.rs` file:
+7. Edit `schemas/mod.rs` file:
+   - edit `get_all_tables()` function, remove line `main_api.merge(UserApi::openapi());`
+8. Run `cargo clippy` command. Fix all import errors and warnings (just remove them).
+9. Edit `tests/integration_test.rs` file:
    - add `#[ignore]` to `test_migrator_up_after_register_tables()` test, like this:
    ```
     #[ignore]
@@ -352,15 +390,15 @@ It's pretty simple. Follow the steps below:
    ```
    Or add `#[ignore]` to all tests, if you want to modify them in the future. Or remove
    all of them, if they have become irrelevant.
-9. Comment or remove unnecessary error codes in `errors/codes.rs` file:
+10. (Optional) Comment or remove unnecessary error codes in `errors/codes.rs` file:
    ```
    pub enum ApiErrorCodes {
-   InternalError = 3000,
-   // UserNotFound = 3001,
-   // InvalidCreateUserData = 3002,
+   UserNotFound = 3001,
+   InvalidCreateUserData = 4002,
+   DatabaseInternalError = 5001,
    }
    ```
-10. Commands`cargo clippy` and `cargo test` should not produce errors.
+11. Commands`cargo clippy` and `cargo test` should not produce errors.
 
 Now you can write your own entities, endpoints and handlers, errors. Rewrite init migration if needed.
 

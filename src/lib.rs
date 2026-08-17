@@ -3,6 +3,7 @@ pub mod errors;
 pub mod handlers;
 pub mod log;
 pub mod misc;
+pub mod schemas;
 
 #[cfg(test)]
 mod tests {

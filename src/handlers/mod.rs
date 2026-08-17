@@ -1,7 +1,7 @@
 pub mod health;
 pub mod user;
 
-use crate::api::ApiDoc;
+use crate::schemas::ApiDoc;
 use crate::database::state::AppState;
 use crate::handlers::health::health_status;
 use crate::handlers::user::{create_user, delete_user, get_user, get_users};

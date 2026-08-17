@@ -46,7 +46,7 @@ This is a **Cargo workspace** with three members:
 ├── src/                     # Main application (axum-app)
 │   ├── main.rs              # Application entry point
 │   ├── lib.rs               # Library exports
-│   ├── api/                 # OpenAPI/Swagger schema definitions
+│   ├── schemas/             # OpenAPI/Swagger schema definitions
 │   │   ├── mod.rs           # API schema module
 │   │   ├── user.rs          # User API schema
 │   │   └── health.rs        # Health check API schema

@@ -1,8 +1,8 @@
 mod health;
 mod user;
 
-use crate::api::health::*;
-use crate::api::user::*;
+use crate::schemas::health::*;
+use crate::schemas::user::*;
 use utoipa::openapi::{InfoBuilder, Server};
 use utoipa::OpenApi;
 

@@ -363,9 +363,10 @@ cargo test --test integration_test
 It's pretty simple. Follow the steps below:
 
 1. Force remove `handlers/user.rs` file
-2. Edit `handlers/mod.rs` file:
-   - remove code line `pub mod user;`
-   - remove code line `use crate::handlers::user::{create_user, delete_user, get_user, get_users};`
+2. Force remove `errors/user.rs` file
+3. Force remove `entities/src/user.rs` file
+4. Force remove `schemas/user.rs` file
+5. Edit `handlers/mod.rs` file:
    - remove user routes in `register_handlers(state: AppState) -> Router` function:
    ```
         // User routes
@@ -374,15 +375,12 @@ It's pretty simple. Follow the steps below:
         .route("/user/{id}", delete(delete_user))
         .route("/users", get(get_users))
    ```
-3. Force remove `errors/user.rs` file
-4. Edit `errors/mod.rs` file
-   - remove code line `pub mod user;`
-5. Force remove `entities/src/user.rs` file
 6. Edit `entities/src/lib.rs` file:
-   - remove code line `pub mod user;`
    - edit `get_all_tables()` function, it should return `vec![]`
-7. Run `cargo clippy` command. There should be no errors, fix warnings.
-8. Edit `tests/integration_test.rs` file:
+7. Edit `schemas/mod.rs` file:
+   - edit `get_all_tables()` function, remove line `main_api.merge(UserApi::openapi());`
+8. Run `cargo clippy` command. Fix all import errors and warnings (just remove them).
+9. Edit `tests/integration_test.rs` file:
    - add `#[ignore]` to `test_migrator_up_after_register_tables()` test, like this:
    ```
     #[ignore]
@@ -391,15 +389,15 @@ It's pretty simple. Follow the steps below:
    ```
    Or add `#[ignore]` to all tests, if you want to modify them in the future. Or remove
    all of them, if they have become irrelevant.
-9. Comment or remove unnecessary error codes in `errors/codes.rs` file:
+10. (Optional) Comment or remove unnecessary error codes in `errors/codes.rs` file:
    ```
    pub enum ApiErrorCodes {
-   InternalError = 3000,
-   // UserNotFound = 3001,
-   // InvalidCreateUserData = 3002,
+   UserNotFound = 3001,
+   InvalidCreateUserData = 4002,
+   DatabaseInternalError = 5001,
    }
    ```
-10. Commands`cargo clippy` and `cargo test` should not produce errors.
+11. Commands`cargo clippy` and `cargo test` should not produce errors.
 
 Now you can write your own entities, endpoints and handlers, errors. Rewrite init migration if needed.
 

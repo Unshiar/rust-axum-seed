@@ -13,7 +13,7 @@ fn main() {
 
     let file = File::create("openapi.json").expect("openapi.json file creation failed");
 
-    let writer = &mut BufWriter::new(file);
+    let mut writer = BufWriter::new(file);
     writer
         .write_all(json.as_bytes())
         .expect("log file creation failed");

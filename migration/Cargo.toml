@@ -1,15 +1,15 @@
 [package]
-name = "migration"
-version = "0.1.0"
-edition = "2021"
-publish = false
+edition      = "2021"
+name         = "migration"
+publish      = false
+rust-version = "1.96.0"
+version      = "0.2.0"
 
 [lib]
 name = "migration"
 path = "src/lib.rs"
 
 [dependencies]
-async-std = { version = "1", features = ["attributes", "tokio1"] }
+tokio = { workspace = true }
 sea-orm-migration = { workspace = true }
 entities = { path = "../entities" }
-

@@ -36,7 +36,7 @@ impl From<Model> for UserResponseDto {
     responses(
         (status = 200, description = "User successfully found", body = UserResponseDto),
         (status = 404, description = ApiError::user_not_found().message(), body = ApiError, example =  json!(ApiError::user_not_found())),
-        (status = 500, description = ApiError::internal_bd() .message(), body = ApiError, example =  json!(ApiError::internal_bd())),
+        (status = 500, description = ApiError::internal_bd().message(), body = ApiError, example =  json!(ApiError::internal_bd())),
     ),
     tag = "Users",
 )]
@@ -60,7 +60,7 @@ pub async fn get_user(
     path = "/users",
     responses(
         (status = 200, description = "List of users retrieved", body = [UserResponseDto]),
-        (status = 500, description = ApiError::internal_bd() .message(), body = ApiError, example =  json!(ApiError::internal_bd())),
+        (status = 500, description = ApiError::internal_bd().message(), body = ApiError, example =  json!(ApiError::internal_bd())),
     ),
     tag = "Users",
 )]
@@ -103,7 +103,7 @@ pub struct UserId {
     responses(
         (status = 201, description = "User successfully created", body = UserId),
         (status = 400, description = ApiError::invalid_create_user_data().message(), body = ApiError, example =  json!(ApiError::invalid_create_user_data())),
-        (status = 500, description = ApiError::internal_bd() .message(), body = ApiError, example =  json!(ApiError::internal_bd())),
+        (status = 500, description = ApiError::internal_bd().message(), body = ApiError, example =  json!(ApiError::internal_bd())),
     ),
     tag = "Users",
 )]

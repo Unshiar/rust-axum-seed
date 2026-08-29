@@ -10,6 +10,8 @@ use migration::Migrator;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     init_logging();
+
+    tracing::info!("Starting server");
     let app_config = AppConfig::from_env()?;
 
     let db_url = app_config.db.db_url();

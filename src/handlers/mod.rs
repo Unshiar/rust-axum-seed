@@ -8,6 +8,7 @@ use crate::schemas::ApiDoc;
 use axum::routing::{delete, get, post};
 use axum::Router;
 use tower_http::cors::{Any, CorsLayer};
+use tower_http::trace::TraceLayer;
 use utoipa_swagger_ui::SwaggerUi;
 
 fn configure_cors() -> CorsLayer {
@@ -25,6 +26,9 @@ pub fn register_handlers(state: AppState) -> Router {
         .route("/users", get(get_users))
         // Health routes
         .route("/health", get(health_status))
+        // Tracing requests, if needed
+        .layer(TraceLayer::new_for_http())
+        // State
         .with_state(state);
 
     // I assume Nginx proxying will be used in the production environment. The built-in Swagger is convenient for debugging.

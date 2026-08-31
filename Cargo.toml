@@ -27,7 +27,7 @@ sea-orm-migration = { workspace = true, }
 validator = { version = "0.21", features = ["derive"] }
 utoipa = { version = "5", features = ["axum_extras", "repr"] }
 utoipa-swagger-ui = { version = "9", features = ["axum"] }
-tower-http = { version = "0.7", features = ["cors"] }
+tower-http = { version = "0.7", features = ["cors", "trace"] }
 
 [dev-dependencies]
 serial_test = "4"

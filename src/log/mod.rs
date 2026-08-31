@@ -13,7 +13,7 @@ pub fn init_logging() {
     let config = LogConfig { enable_file: true };
 
     let env_filter =
-        EnvFilter::new("axum_app=info,entities=info,sea_orm_migration=info,sqlx=warn,sea_orm=warn");
+        EnvFilter::new("axum_app=info,entities=info,sea_orm_migration=info,sqlx=warn,sea_orm=warn,tower_http=debug");
 
     let stdout_layer = tracing_subscriber::fmt::layer()
         .with_target(true)

@@ -1,7 +1,7 @@
 use std::fs;
 use std::sync::Arc;
 use tracing_subscriber::util::SubscriberInitExt;
-use tracing_subscriber::{layer::SubscriberExt, EnvFilter, Layer, Registry};
+use tracing_subscriber::{layer::SubscriberExt, EnvFilter, Registry};
 
 const LOG_FILE: &str = "/var/log/app.log";
 
@@ -13,14 +13,16 @@ pub fn init_logging() {
     let config = LogConfig { enable_file: true };
 
     let env_filter =
-        EnvFilter::new("trace,entities=trace,sea_orm_migration=info,sqlx=warn,sea_orm=warn");
+        EnvFilter::new("axum_app=info,entities=info,sea_orm_migration=info,sqlx=warn,sea_orm=warn");
 
     let stdout_layer = tracing_subscriber::fmt::layer()
         .with_target(true)
-        .with_filter(env_filter.clone())
-        .boxed();
+        // Optional thread name
+        // .with_thread_names(true)
+        .with_thread_ids(true);
 
-    let subscriber = Registry::default().with(stdout_layer);
+    let mut file_layer = None;
+    let mut file_error = None;
 
     if config.enable_file {
         match fs::OpenOptions::new()
@@ -29,26 +31,29 @@ pub fn init_logging() {
             .open(LOG_FILE)
         {
             Ok(file) => {
-                let file_layer = tracing_subscriber::fmt::layer()
-                    .with_target(true)
-                    .with_writer(Arc::new(file))
-                    .with_filter(env_filter);
-
-                subscriber.with(file_layer).init();
-                return;
+                file_layer = Some(
+                    tracing_subscriber::fmt::layer()
+                        .with_target(true)
+                        .with_writer(Arc::new(file)),
+                );
             }
             Err(err) => {
-                subscriber.init();
-
-                tracing::error!(
-                    "Can't open log file '{}': {}. Logging will be done only to stdout.",
-                    LOG_FILE,
-                    err
-                );
-                return;
+                file_error = Some(err);
             }
         }
     }
 
-    subscriber.init();
+    Registry::default()
+        .with(stdout_layer)
+        .with(file_layer)
+        .with(env_filter)
+        .init();
+
+    if let Some(err) = file_error {
+        tracing::error!(
+            "Can't open log file '{}': {}. Logging will be done only to stdout.",
+            LOG_FILE,
+            err
+        );
+    }
 }

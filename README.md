@@ -182,7 +182,21 @@ pub const PORT_DEFAULT: u16 = 8080;
 cargo run
 ```
 
-The server will start on `http://127.0.0.1:8080`
+Possible output:
+```
+2026-08-31T12:31:22.798913Z ERROR ThreadId(01) axum_app::log: Can't open log file '/var/log/app.log': Permission denied (os error 13). Logging will be done only to stdout.
+2026-08-31T12:31:22.798983Z  INFO ThreadId(01) axum_app: Starting server
+2026-08-31T12:31:22.799032Z  WARN ThreadId(01) axum_app::misc::env_handle: env 'DATABASE_HOST' is not set, using default
+2026-08-31T12:31:22.799078Z  WARN ThreadId(01) axum_app::misc::env_handle: env 'DATABASE_PORT' is not set, using default
+2026-08-31T12:31:22.799103Z  WARN ThreadId(01) axum_app::misc::env_handle: env 'DATABASE_USER' is not set, using default
+2026-08-31T12:31:22.799123Z  WARN ThreadId(01) axum_app::misc::env_handle: env 'DATABASE_PASSWORD' is not set, using default
+2026-08-31T12:31:22.799141Z  WARN ThreadId(01) axum_app::misc::env_handle: env 'DATABASE_NAME' is not set, using default
+2026-08-31T12:31:22.799175Z  WARN ThreadId(01) axum_app::misc::env_handle: env 'HOST' is not set, using default
+2026-08-31T12:31:22.799195Z  WARN ThreadId(01) axum_app::misc::env_handle: env 'PORT' is not set, using default
+2026-08-31T12:31:22.907129Z  INFO ThreadId(01) axum_app::database: Creating/updating database tables
+2026-08-31T12:31:22.915531Z  INFO ThreadId(01) entities: [DB] Table 'users' already exists.
+2026-08-31T12:31:22.917575Z  INFO ThreadId(01) axum_app: Server started on http://127.0.0.1:8080
+```
 
 ### 5. API Endpoints example
 

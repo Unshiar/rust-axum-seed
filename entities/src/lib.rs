@@ -22,11 +22,11 @@ where
     async fn create_table_if_not_exist(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let table_name = self.table_name();
         if !manager.has_table(&table_name).await? {
-            tracing::debug!("[DB] Table '{}' does not exists. Creating...", table_name);
+            tracing::info!("[DB] Table '{}' does not exists. Creating...", table_name);
             self.create_table_force(manager).await?;
-            tracing::debug!("[DB] Done.");
+            tracing::info!("[DB] Done.");
         } else {
-            tracing::debug!("[DB] Table '{}' already exists.", table_name);
+            tracing::info!("[DB] Table '{}' already exists.", table_name);
         }
         Ok(())
     }

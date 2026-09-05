@@ -1,3 +1,4 @@
+use hostname_validator;
 use std::net::{AddrParseError, Ipv4Addr, SocketAddr};
 use std::num::ParseIntError;
 
@@ -25,23 +26,37 @@ fn get_str_env_by_name(env_name: &str, default_value: &str) -> String {
 
 pub fn build_postgres_db_url() -> Result<String, Box<dyn std::error::Error>> {
     let database_port = get_env_port_by_name(ENV_DB_PORT_NAME, DB_PORT_DEFAULT)?;
+    let database_host = get_env_host_by_name(ENV_DB_HOST_NAME, DB_HOST_DEFAULT)?;
     Ok(format!(
         "postgres://{}:{}@{}:{}/{}",
         get_str_env_by_name(ENV_DB_USER_NAME, DB_USER_DEFAULT),
         get_str_env_by_name(ENV_DB_PASSWORD_NAME, DB_PASSWORD_DEFAULT),
-        get_str_env_by_name(ENV_DB_HOST_NAME, DB_HOST_DEFAULT),
+        database_host,
         database_port,
         get_str_env_by_name(ENV_DB_NAME_NAME, DB_NAME_DEFAULT)
     ))
+}
+
+pub fn get_env_host_by_name(
+    env_name: &str,
+    default_value: &str,
+) -> Result<String, Box<dyn std::error::Error>> {
+    let host_str = get_str_env_by_name(env_name, default_value);
+    if !hostname_validator::is_valid(host_str.as_str()) {
+        tracing::error!("env '{env_name}' value must comply with the 'IETF RFC 1123' standard");
+        return Err(Box::from("Hostname format"));
+    }
+
+    Ok(host_str)
 }
 
 pub fn get_env_ip_by_name(
     env_name: &str,
     default_value: Ipv4Addr,
 ) -> Result<Ipv4Addr, AddrParseError> {
-    let host_str = get_str_env_by_name(env_name, &default_value.to_string());
+    let ip_str = get_str_env_by_name(env_name, &default_value.to_string());
 
-    host_str.parse::<Ipv4Addr>().inspect_err(|err| {
+    ip_str.parse::<Ipv4Addr>().inspect_err(|err| {
         tracing::error!("env '{env_name}' should be IPv4 format: {}", err);
     })
 }

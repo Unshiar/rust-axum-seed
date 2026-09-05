@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  app:
+    image: app:latest
+    container_name: app-test
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8080
+      DATABASE_HOST: postgres
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend
+
+  postgres:
+    image: postgres:18
+    container_name: pgsql-test
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: user
+      POSTGRES_DB: db-test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge

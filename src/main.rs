@@ -2,7 +2,7 @@ use axum_app::database::{register_tables, state::AppState};
 use axum_app::handlers::register_handlers;
 use axum_app::log::init_logging;
 use axum_app::misc::config::AppConfig;
-use axum_app::misc::signals::shutdown_signal;
+use axum_app::misc::signals::shutdown_signals;
 use entities::sea_orm::Database;
 use entities::sea_orm_migration::MigratorTrait;
 use migration::Migrator;
@@ -42,7 +42,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("Server started on http://{}", addr);
 
     axum::serve(listener, app)
-        .with_graceful_shutdown(shutdown_signal())
+        .with_graceful_shutdown(shutdown_signals())
         .await
         .inspect_err(|er| {
             tracing::error!("Server error: {}", er);

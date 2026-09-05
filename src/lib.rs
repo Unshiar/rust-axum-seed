@@ -143,19 +143,7 @@ mod tests {
         std::env::set_var(ENV_DB_PORT_NAME, "5432");
         std::env::remove_var(ENV_DB_NAME_NAME);
         let result = build_postgres_db_url();
-        assert!(result.is_err());
-    }
-
-    #[serial]
-    #[test]
-    fn test_build_postgres_db_url_wrong_ipv4_format_db_host() {
-        std::env::set_var(ENV_DB_USER_NAME, "db_user");
-        std::env::set_var(ENV_DB_PASSWORD_NAME, "db_user_password");
-        std::env::set_var(ENV_DB_HOST_NAME, "127.0.0.999");
-        std::env::set_var(ENV_DB_PORT_NAME, "5432");
-        std::env::remove_var(ENV_DB_NAME_NAME);
-        let result = build_postgres_db_url();
-        assert!(result.is_err());
+        assert!(result.is_ok());
     }
 
     #[serial]

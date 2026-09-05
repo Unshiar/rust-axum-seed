@@ -11,10 +11,10 @@ pub const ENV_DB_HOST_NAME: &str = "DATABASE_HOST";
 pub const DB_HOST_DEFAULT: &str = "postgres";
 pub const ENV_DB_PORT_NAME: &str = "DATABASE_PORT";
 pub const DB_PORT_DEFAULT: u16 = 5432;
-pub const ENV_HOST_NAME: &str = "HOST";
-pub const HOST_DEFAULT: Ipv4Addr = Ipv4Addr::new(0, 0, 0, 0);
-pub const ENV_PORT_NAME: &str = "PORT";
-pub const PORT_DEFAULT: u16 = 8080;
+pub const ENV_SERVER_IP_NAME: &str = "SERVER_IP";
+pub const SERVER_IP_DEFAULT: Ipv4Addr = Ipv4Addr::new(0, 0, 0, 0);
+pub const ENV_SERVER_PORT_NAME: &str = "SERVER_PORT";
+pub const SERVER_PORT_DEFAULT: u16 = 8080;
 
 fn get_str_env_by_name(env_name: &str, default_value: &str) -> String {
     std::env::var(env_name).unwrap_or_else(|_| {
@@ -35,7 +35,7 @@ pub fn build_postgres_db_url() -> Result<String, Box<dyn std::error::Error>> {
     ))
 }
 
-pub fn get_env_host_by_name(
+pub fn get_env_ip_by_name(
     env_name: &str,
     default_value: Ipv4Addr,
 ) -> Result<Ipv4Addr, AddrParseError> {
@@ -55,7 +55,7 @@ pub fn get_env_port_by_name(env_name: &str, default_value: u16) -> Result<u16, P
 }
 
 pub fn build_socket_addr() -> Result<SocketAddr, Box<dyn std::error::Error>> {
-    let host = get_env_host_by_name(ENV_HOST_NAME, HOST_DEFAULT)?;
-    let port = get_env_port_by_name(ENV_PORT_NAME, PORT_DEFAULT)?;
+    let host = get_env_ip_by_name(ENV_SERVER_IP_NAME, SERVER_IP_DEFAULT)?;
+    let port = get_env_port_by_name(ENV_SERVER_PORT_NAME, SERVER_PORT_DEFAULT)?;
     Ok(SocketAddr::from((host, port)))
 }

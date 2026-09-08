@@ -7,11 +7,9 @@ Suitable for MVPs, startups, or anyone wanting to try using Rust as a REST API a
 ## Features
 
 - 🚀 High-performance async REST API using [Axum](https://github.com/tokio-rs/axum)
-- 🗄️ Database ORM with [SeaORM](https://www.sea-ql.org/SeaORM/) supporting PostgreSQL and SQLite
-- 🔄 Automatic database migrations with [SeaORM Migration](https://www.sea-ql.org/SeaORM/)
 - 📝 Structured logging with [Tracing](https://tokio.rs/tokio/topics/tracing)
 - 🔧 Environment-based configuration with sensible defaults
-- 🐳 Docker Compose setup for PostgreSQL
+- 🐳 Docker Compose setup
 
 ## Tech Stack
 
@@ -19,6 +17,7 @@ Suitable for MVPs, startups, or anyone wanting to try using Rust as a REST API a
 - **Web Framework**: [Axum 0.8](https://github.com/tokio-rs/axum)
 - **Runtime**: [Tokio](https://tokio.rs/)
 - **Database**: PostgreSQL / SQLite via [SeaORM 2.0](https://www.sea-ql.org/SeaORM/)
+- **Database migrations**: via [SeaORM Migration](https://www.sea-ql.org/SeaORM/docs/migration/setting-up-migration/)
 - **Serialization**: [Serde](https://serde.rs/)
 - **Validation**: [validator](https://github.com/Keats/validator)
 - **Api schemas**: [utoipa](https://github.com/juhaku/utoipa)
@@ -87,14 +86,14 @@ This is a **Cargo workspace** with three members:
 │       └── m20260624_074014_initial_schema.rs  # Initial schema migration
 ├── tests/                  # Integration tests
 │   └── integration_test.rs # Integration test suite
-├── docker-compose.yml      # PostgreSQL service
-├── openapi.json            # Generated OpenAPI specification
+├── .env.example            # Example of default environment
+├── Dockerfile.debug        # Dockerfile for debug build
+├── docker-build-debug.sh   # script for debug building an application in a container
+├── docker-compose-debug.yml  # axum-app and PostgreSQL services together
 └── Cargo.toml             # Workspace configuration
 ```
 
 **Note:** The `entities` crate is a **shared library** used by both the main `axum-app` and the `migration` crate, enabling consistent entity definitions across the application and migrations.
-
-
 
 ## Prerequisites
 
@@ -111,31 +110,39 @@ git clone <repository-url>
 cd rust-axum-seed
 ```
 
-### 2. Start PostgreSQL (Docker)
+### 2. Build axum-app application. This will build the application and make an image for it.
 
 ```bash
-docker-compose up -d
+./docker-build-debug.sh
 ```
 
-This starts a PostgreSQL instance on `127.0.0.1:5432` with credentials:
+### 3. Start axum-app application and PostgreSQL (Docker)
+
+```bash
+docker compose -f docker-compose-debug.yml up -d
+```
+
+This starts a PostgreSQL instance in container on `0.0.0.0:5432` with credentials:
 - **Username**: `user`
 - **Password**: `user`
 - **Database**: `db-test`
 
-### 3. Configure Environment (Optional)
+And axum-app application in container on `0.0.0.0:8080`
+
+### 3. For axum-app application you can configure environment (Optional)
 
 Create a `.env` file or use `.env.example`:
 
 ```
 # Server Configuration
-HOST=127.0.0.1
-PORT=8080
+SERVER_IP=0.0.0.0
+SERVER_PORT=8080
 
 # Database Configuration
 DATABASE_USER=user
 DATABASE_PASSWORD=user
 DATABASE_NAME=db-test
-DATABASE_HOST=127.0.0.1
+DATABASE_HOST=postgres
 DATABASE_PORT=5432
 
 # Notes:
@@ -147,12 +154,12 @@ DATABASE_PORT=5432
 
 | Variable            | Default     | Description                |
 |---------------------|-------------|----------------------------|
-| `HOST`              | `127.0.0.1` | Server bind address (IPv4) |
-| `PORT`              | `8080`      | Server port                |
+| `SERVER_IP`         | `0.0.0.0`   | Server bind address (IPv4) |
+| `SERVER_PORT`       | `8080`      | Server port                |
 | `DATABASE_USER`     | `user`      | Database user              |
 | `DATABASE_PASSWORD` | `user`      | Database password          |
 | `DATABASE_NAME`     | `db-test`   | Database name              |
-| `DATABASE_HOST`     | `127.0.0.1` | Database server address    |
+| `DATABASE_HOST`     | `postgres`  | Database server address    |
 | `DATABASE_PORT`     | `5432`      | Database server port       |
 
 You can change the names and values of default environment variables, see module `src/misc/env_handle.rs`
@@ -165,37 +172,33 @@ pub const DB_PASSWORD_DEFAULT: &str = "user";
 pub const ENV_DB_NAME_NAME: &str = "DATABASE_NAME";
 pub const DB_NAME_DEFAULT: &str = "db-test";
 pub const ENV_DB_HOST_NAME: &str = "DATABASE_HOST";
-pub const DB_HOST_DEFAULT: Ipv4Addr = Ipv4Addr::new(127, 0, 0, 1);
+pub const DB_HOST_DEFAULT: &str = "postgres";
 pub const ENV_DB_PORT_NAME: &str = "DATABASE_PORT";
 pub const DB_PORT_DEFAULT: u16 = 5432;
-pub const ENV_HOST_NAME: &str = "HOST";
-pub const HOST_DEFAULT: Ipv4Addr = Ipv4Addr::new(127, 0, 0, 1);
-pub const ENV_PORT_NAME: &str = "PORT";
-pub const PORT_DEFAULT: u16 = 8080;
-...
+pub const ENV_SERVER_IP_NAME: &str = "SERVER_IP";
+pub const SERVER_IP_DEFAULT: Ipv4Addr = Ipv4Addr::new(0, 0, 0, 0);
+pub const ENV_SERVER_PORT_NAME: &str = "SERVER_PORT";
+pub const SERVER_PORT_DEFAULT: u16 = 8080;
 ```
 - All environment variables are optional and fall back to defaults if not set (with warnings in logs).
 
-### 4. Run the Application
+### 4. Wait until all containers is up and see axum-app logs
 
 ```bash
-cargo run
+docker container logs app-test
 ```
 
 Possible output:
 ```
-2026-08-31T12:31:22.798913Z ERROR ThreadId(01) axum_app::log: Can't open log file '/var/log/app.log': Permission denied (os error 13). Logging will be done only to stdout.
-2026-08-31T12:31:22.798983Z  INFO ThreadId(01) axum_app: Starting server
-2026-08-31T12:31:22.799032Z  WARN ThreadId(01) axum_app::misc::env_handle: env 'DATABASE_HOST' is not set, using default
-2026-08-31T12:31:22.799078Z  WARN ThreadId(01) axum_app::misc::env_handle: env 'DATABASE_PORT' is not set, using default
-2026-08-31T12:31:22.799103Z  WARN ThreadId(01) axum_app::misc::env_handle: env 'DATABASE_USER' is not set, using default
-2026-08-31T12:31:22.799123Z  WARN ThreadId(01) axum_app::misc::env_handle: env 'DATABASE_PASSWORD' is not set, using default
-2026-08-31T12:31:22.799141Z  WARN ThreadId(01) axum_app::misc::env_handle: env 'DATABASE_NAME' is not set, using default
-2026-08-31T12:31:22.799175Z  WARN ThreadId(01) axum_app::misc::env_handle: env 'HOST' is not set, using default
-2026-08-31T12:31:22.799195Z  WARN ThreadId(01) axum_app::misc::env_handle: env 'PORT' is not set, using default
-2026-08-31T12:31:22.907129Z  INFO ThreadId(01) axum_app::database: Creating/updating database tables
-2026-08-31T12:31:22.915531Z  INFO ThreadId(01) entities: [DB] Table 'users' already exists.
-2026-08-31T12:31:22.917575Z  INFO ThreadId(01) axum_app: Server started on http://127.0.0.1:8080
+2026-09-07T14:51:23.298141Z  INFO ThreadId(01) axum_app: Starting server
+2026-09-07T14:51:23.298643Z  WARN ThreadId(01) axum_app::misc::env_handle: env 'DATABASE_PORT' is not set, using default
+2026-09-07T14:51:23.298908Z  WARN ThreadId(01) axum_app::misc::env_handle: env 'DATABASE_USER' is not set, using default
+2026-09-07T14:51:23.298953Z  WARN ThreadId(01) axum_app::misc::env_handle: env 'DATABASE_PASSWORD' is not set, using default
+2026-09-07T14:51:23.298974Z  WARN ThreadId(01) axum_app::misc::env_handle: env 'DATABASE_NAME' is not set, using default
+2026-09-07T14:51:23.385760Z  INFO ThreadId(01) axum_app::database: Creating/updating database tables
+2026-09-07T14:51:23.396314Z  INFO ThreadId(01) entities: [DB] Table 'users' does not exists. Creating...
+2026-09-07T14:51:23.489746Z  INFO ThreadId(01) entities: [DB] Done.
+2026-09-07T14:51:23.493828Z  INFO ThreadId(01) axum_app: Server started on http://0.0.0.0:8080
 ```
 
 ### 5. API Endpoints example
@@ -209,7 +212,7 @@ Possible output:
 | `GET`    | `/users`     | List all users    |
 | `DELETE` | `/user/{id}` | Delete user by ID |
 
-Examples (curl):
+Examples (curl) - you run it on your local pc:
 
 ```bash
 curl -X POST http://127.0.0.1:8080/user -H "Content-Type: application/json" -d '{"name": "User_1", "email": "user_1@test.com"}'
@@ -246,13 +249,9 @@ The application provides OpenAPI/Swagger documentation for interactive API explo
 
 ### Built-in Swagger UI (Debug Mode)
 
-When running in **debug mode** (development), a built-in Swagger UI is available:
+When running in **debug mode** (development), a built-in Swagger UI is available.
 
-```bash
-cargo run
-```
-
-Then navigate to:
+It's available on:
 ```
 http://127.0.0.1:8080/swagger-ui
 ```
@@ -284,14 +283,6 @@ Add new migrations:
 cd migration
 sea-orm-cli migrate add <migration_name>
 ```
-
-## Building for Production
-
-```bash
-cargo build --release
-```
-
-The binary will be available at `target/release/axum-app`
 
 ## Development
 
@@ -362,16 +353,11 @@ cargo test --test integration_test
 
 - Ensure PostgreSQL is running: `docker-compose ps`
 - Check connection env vars match your setup
-- Verify port 5432 is accessible
 
 ### Migration errors in release mode
 
 - Ensure `migration/` workspace member is properly configured
 - Run `cargo build --release` to rebuild
-
-### Port already in use
-
-- Change the `PORT` env var: `PORT=8000 cargo run`
 
 ## How to get a clean app (without current user logic)
 

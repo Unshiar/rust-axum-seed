@@ -129,7 +129,7 @@ This starts a PostgreSQL instance in container on `0.0.0.0:5432` with credential
 
 And axum-app application in container on `0.0.0.0:8080`
 
-### 3. For axum-app application you can configure environment (Optional)
+### 4. For axum-app application you can configure environment (Optional)
 
 Create a `.env` file or use `.env.example`:
 
@@ -182,10 +182,10 @@ pub const SERVER_PORT_DEFAULT: u16 = 8080;
 ```
 - All environment variables are optional and fall back to defaults if not set (with warnings in logs).
 
-### 4. Wait until all containers is up and see axum-app logs
+### 5. Wait until all containers is up and see axum-app logs
 
 ```bash
-docker container logs app-test
+docker container logs app
 ```
 
 Possible output:
@@ -201,7 +201,7 @@ Possible output:
 2026-09-07T14:51:23.493828Z  INFO ThreadId(01) axum_app: Server started on http://0.0.0.0:8080
 ```
 
-### 5. API Endpoints example
+### 6. API Endpoints example
 
 #### User Management
 
@@ -247,7 +247,7 @@ curl -X GET http://127.0.0.1:8080/health
 
 The application provides OpenAPI/Swagger documentation for interactive API exploration.
 
-### Built-in Swagger UI (Debug Mode)
+### 1. Built-in Swagger UI (Debug Mode)
 
 When running in **debug mode** (development), a built-in Swagger UI is available.
 
@@ -260,7 +260,7 @@ This provides an interactive interface to explore and test all API endpoints wit
 
 **Note:** The built-in Swagger UI is only available in debug builds. For production environments, use the generated OpenAPI schema with an external Swagger/OpenAPI viewer (e.g., Nginx proxy + Swagger UI).
 
-### Generate OpenAPI Schema
+### 2. Generate OpenAPI Schema
 
 To generate the OpenAPI specification as a JSON file:
 
@@ -269,6 +269,16 @@ cargo run --bin generate_schema
 ```
 
 This will create/update the `openapi.json` file in the project root, which contains the complete API specification compatible with any OpenAPI viewer or code generator.
+
+## Logging
+
+Using **tracing** and **tracing-subscriber** for structured logging.
+
+The env var `LOG_LEVEL` can be used for global log level of all modules. Possible values are: `error`, `warn`, `info`, `debug`, `trace`.
+
+Default value is `info`, if env var `LOG_LEVEL` is not set or invalid.
+
+You can change the name of env var and hardcode the logging level for a specific module, see module `src/log/mod.rs`
 
 ## Database Migrations
 

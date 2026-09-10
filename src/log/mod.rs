@@ -4,24 +4,36 @@ use tracing_subscriber::util::SubscriberInitExt;
 use tracing_subscriber::{layer::SubscriberExt, EnvFilter, Registry};
 
 const LOG_FILE: &str = "/var/log/app.log";
+const ENV_LOG_LEVEL: &str = "LOG_LEVEL";
 
 struct LogConfig {
     enable_file: bool,
 }
 
+fn get_log_level() -> String {
+    std::env::var(ENV_LOG_LEVEL)
+        .ok()
+        .and_then(|level| level.parse::<tracing::Level>().ok())
+        .unwrap_or(tracing::Level::INFO)
+        .to_string()
+}
+
 pub fn init_logging() {
     let config = LogConfig { enable_file: true };
+    let log_level = get_log_level();
 
-    let env_filter = EnvFilter::new(
-        "axum=info,\
-        generate_schema=info,\
-        axum_app=info,\
-        entities=info,\
-        sea_orm_migration=info,\
-        sqlx=warn,\
-        sea_orm=warn,\
-        tower_http=debug",
-    );
+    // Perhaps you will want to hardcode the logging level for a specific module
+    let env_filter = EnvFilter::new(format!(
+        "axum={},\
+        generate_schema={},\
+        axum_app={},\
+        entities={},\
+        sea_orm_migration={},\
+        sqlx={},\
+        sea_orm={},\
+        tower_http={}",
+        log_level, log_level, log_level, log_level, log_level, log_level, log_level, log_level
+    ));
 
     let stdout_layer = tracing_subscriber::fmt::layer()
         .with_target(true)

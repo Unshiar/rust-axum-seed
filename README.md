@@ -145,6 +145,9 @@ DATABASE_NAME=db-test
 DATABASE_HOST=postgres
 DATABASE_PORT=5432
 
+# Logging Configuration
+LOG_LEVEL=info
+
 # Notes:
 # - Copy this file to `.env` and adjust values for your environment.
 # - For production, manage secrets using your secret manager or CI.

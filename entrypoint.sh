@@ -3,7 +3,7 @@ set -e
 
 health_check() {
     echo "Running health check"
-    if curl -f --silent "http://localhost:${SERVER_PORT}/health" > /dev/null; then
+    if curl -f --silent "http://${SERVER_IP}:${SERVER_PORT}/health" > /dev/null; then
         echo "Health check succeeded"
         exit 0
     else

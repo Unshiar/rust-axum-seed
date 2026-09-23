@@ -14,7 +14,12 @@ services:
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       LOG_LEVEL: ${LOG_LEVEL}
     ports:
-      - "8080:8080"
+      - 8080:${SERVER_PORT}
+    healthcheck:
+      test: ["CMD", "./entrypoint.sh", "healthcheck"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     depends_on:
       postgres:
         condition: service_healthy

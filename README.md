@@ -273,6 +273,11 @@ cargo run --bin generate_schema
 
 This will create/update the `openapi.json` file in the project root, which contains the complete API specification compatible with any OpenAPI viewer or code generator.
 
+See help:
+```bash
+cargo run --bin generate_schema -- --help
+```
+
 ## Logging
 
 Using **tracing** and **tracing-subscriber** for structured logging.

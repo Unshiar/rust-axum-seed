@@ -1,14 +1,12 @@
+pub mod config;
+
+use crate::log::config::LogConfig;
 use std::fs;
 use std::sync::Arc;
 use tracing_subscriber::util::SubscriberInitExt;
 use tracing_subscriber::{layer::SubscriberExt, EnvFilter, Registry};
 
-const LOG_FILE: &str = "/var/log/app.log";
 const ENV_LOG_LEVEL: &str = "LOG_LEVEL";
-
-struct LogConfig {
-    enable_file: bool,
-}
 
 fn get_log_level() -> String {
     std::env::var(ENV_LOG_LEVEL)
@@ -18,8 +16,7 @@ fn get_log_level() -> String {
         .to_string()
 }
 
-pub fn init_logging() {
-    let config = LogConfig { enable_file: true };
+pub fn init_logging(config: LogConfig) {
     let log_level = get_log_level();
 
     // Perhaps you will want to hardcode the logging level for a specific module
@@ -48,7 +45,7 @@ pub fn init_logging() {
         match fs::OpenOptions::new()
             .create(true)
             .append(true)
-            .open(LOG_FILE)
+            .open(&config.log_file)
         {
             Ok(file) => {
                 file_layer = Some(
@@ -72,7 +69,7 @@ pub fn init_logging() {
     if let Some(err) = file_error {
         tracing::error!(
             "Can't open log file '{}': {}. Logging will be done only to stdout.",
-            LOG_FILE,
+            config.log_file,
             err
         );
     }

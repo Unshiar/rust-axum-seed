@@ -1,5 +1,6 @@
 use axum_app::database::{register_tables, state::AppState};
 use axum_app::handlers::register_handlers;
+use axum_app::log::config::LogConfig;
 use axum_app::log::init_logging;
 use axum_app::misc::config::AppConfig;
 use axum_app::misc::signals::shutdown_signals;
@@ -9,7 +10,7 @@ use migration::Migrator;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    init_logging();
+    init_logging(LogConfig::with_file("/var/log/app.log"));
 
     tracing::info!("Starting server");
     let app_config = AppConfig::from_env()?;

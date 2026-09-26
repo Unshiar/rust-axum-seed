@@ -379,6 +379,7 @@ name = "axum-app"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "clap",
  "entities",
  "hostname-validator",
  "migration",

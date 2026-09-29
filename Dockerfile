@@ -14,7 +14,7 @@ COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 
 # build stage
-FROM rust:1.96-trixie AS builder
+FROM rust:1.96-trixie AS build
 WORKDIR /app
 COPY . .
 

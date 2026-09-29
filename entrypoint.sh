@@ -16,4 +16,4 @@ if [ "$1" = "healthcheck" ]; then
     health_check
 fi
 
-exec "/usr/local/axum-app"
+exec "/usr/local/bin/axum-app"
